@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.JsonReader;
 import android.util.Log;
@@ -54,7 +55,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    private String token=null;
+    private int uid=0;
+    private String username=null;
+    private int gid=0;
     public int err_code=-1;
+    public String err_info="";
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -313,9 +319,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // TODO: attempt authentication against a network service.
             JSONObject result;
             try {
+                String imei = ((TelephonyManager) getSystemService(TELEPHONY_SERVICE)).getDeviceId();
 
-                // Simulate network access.
-                URL url= new URL("http://58.63.232.138:62078/lock/login.php");
+                URL url= new URL("http://58.63.232.138:62078/lock/api.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
@@ -323,7 +329,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                 conn.connect();
                 DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-                String content = "username="+ mUsername+"passwd="+mPassword;
+                String content = "action=1&username="+ mUsername+"&passwd="+mPassword+"&imei="+imei;
                 out.writeBytes(content);
                 out.flush();
                 out.close();
@@ -337,21 +343,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 result=new JSONObject(resultData);
 
             } catch (Exception e){
+                err_code=404;
+                err_info = "Service not available.";
                 Log.d("hi",e.toString());
                 return false;
             }
             boolean isLoggedin=false;
             try {
 
-                if(result.getBoolean("success")) {
+                if(result.getInt("error")==0) {
                     isLoggedin = true;
                     SharedPreferences userinfo = LoginActivity.this.getSharedPreferences("userinfo", MODE_PRIVATE);
                     SharedPreferences.Editor editor = userinfo.edit();
                     editor.putString("username",mUsername);
+                    editor.putInt("uid",result.getInt("uid"));
                     editor.putInt("isLoggedin",1);
-                    editor.putString("sessionid",result.getString("sessionid"));
+                    editor.putString("token",result.getString("token"));
                     editor.apply();
 
+                }else{
+                    err_code = result.getInt("error");
+                    err_info = result.getString("info");
                 }
             }catch (Exception e){
                 isLoggedin = false;
@@ -372,7 +384,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     mPasswordView.setError(getString(R.string.error_service_unavailable));
                     mPasswordView.requestFocus();
                 }else {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.setError(err_info);
                     mPasswordView.requestFocus();
                 }
             }
