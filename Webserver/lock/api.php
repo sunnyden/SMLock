@@ -27,30 +27,34 @@
 			$passwd = $_POST['passwd'];
 			$passwd_md5 = md5($passwd);
 			$is_succeed=0;
+			$imei=$_POST['imei'];
 			$token = NULL;
 			$uid = NULL;
-			$sql = mysql_query("select * from tb_users where username=${username}");
+			$sql = mysql_query("select * from tb_users where username='${username}'");
 			
 			while($row = mysql_fetch_array($sql))
 			{
-				if($row['username'] = $username && $row['passwd'] = $passwd_md5){
+				if($row['username'] == $username && $row['passwd'] == $passwd_md5){
 					$uid = $row['uid'];
 					for($i = 0; $i < 3; $i++)
 					{
 						$rnd[$i] = rand(0,99999);
 					}
 					$token = md5($username.$uid.$rnd[0].$rnd[1].$rnd[2]);
-					
-					$is_succeed=1;
+					if(!empty($_POST['imei'])){
+						$is_succeed=1;
+					}
 				}
 			}
 			if($is_succeed == 1)
 			{
+				mysql_query("UPDATE tb_session SET valid=0 WHERE uid=${uid}");
+				mysql_query("INSERT INTO tb_session VALUES (NULL, '${token}', ${uid}, '${imei}',NULL,1)");
 				echo(getJson(array("error" => 0,"uid" => $uid,"username" => $username,"token" => $token)));
 			}
 			else
 			{
-				echo(getJson(array("error" => 403,"info","Password or username error")));
+				echo(getJson(array("error" => 403,"info"=>"Password or username error")));
 			}
 			break;
 		
@@ -65,15 +69,25 @@
 			{
 				$locknum=$_POST['lknum'];
 				$sql=mysql_query("select * from tb_lock where locknum=${locknum}");
-				$row = mysql_fetch_array($sql);
-				$mac=$row['lkmac'];
-				echo(getJson(array("error" => 0,"mac" => $mac)));
+				if(mysql_num_rows($sql)==0)
+				{
+					echo(getJson(array("error" => 404,"info","Unknown Lock ID")));
+				}
+				else
+				{
+					$row = mysql_fetch_array($sql);
+					$mac=$row['lkmac'];
+					echo(getJson(array("error" => 0,"mac" => $mac)));
+				}
 			}
 			else
 			{
 				echo(getJson(array("error" => 503,"info","Authorization error")));
 			}
 			break;
+		case 3:
+			break;
+		
 	}
 	
 	mysql_close($sql_conn);

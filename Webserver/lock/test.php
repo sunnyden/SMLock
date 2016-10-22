@@ -1,4 +1,4 @@
 <?php
-require("./inc/basic.php");
-echo(getJson(array("bool"=>0,"test"=>"value1_txt","ddd"=>"fff","int"=>434434)));
+require("./inc/encrypt.php");
+echo(getVerfCode("12:34:56:ab:cd:ef"));
 ?>

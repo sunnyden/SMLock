@@ -1,6 +1,6 @@
 	<?php
 	//initialize the SQL connection
-	$sql_conn=mysql_connect("localhost","root","m62078");
+	$sql_conn=mysql_connect("localhost","root","****");
 	if(!$sql_conn){
 		die("{\"error\":500,\"info\":\"Internal Server Error\"}");
 	}

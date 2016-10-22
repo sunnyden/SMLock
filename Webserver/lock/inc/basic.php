@@ -4,7 +4,7 @@
 	* Author: Haoqing Deng(dhq.sunny@gmail.com)
 	* Date: 2016-10-21
 	* Description:A PHP library for basic data processing
-	*/
+	*****************************************************/
 	
 	function getJson($orig_array)
 	{
@@ -35,7 +35,7 @@
 		$is_legal=0;
 		while($row = mysql_fetch_array($sql))
 		{
-			if($row['session_token']==$token)
+			if($row['session_token']==$token && $row['valid']==1)
 			{
 				$is_legal=1;
 			}
