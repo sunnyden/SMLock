@@ -7,6 +7,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="finger_auth_success_tips">Fingerprint auth success!\nInput the Lock ID to unlock</string>
+    <string name="pin_auth_success_tips">PIN auth success!\nInput the Lock ID to unlock</string>
     <string name="finger_auth_failure_tips">Fingerprint auth failed!\nTry again later</string>
     <string name="title_activity_login">Sign in</string>
 
@@ -26,6 +27,11 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+
+    <!--Dialog-->
+    <string name="info_set_passwd">To improve your safety, a PIN code is needed when unlocking a device.</string>
+    <string name="info_wrong_pin">Please confirm your PIN.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

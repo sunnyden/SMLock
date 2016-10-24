@@ -2,6 +2,7 @@ package com.denghaoqing.btsmartlock.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
@@ -13,10 +14,13 @@ import android.support.v4.os.CancellationSignal;
 import android.support.v4.app.Fragment;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,6 +28,7 @@ import android.widget.Toast;
 
 import com.denghaoqing.btsmartlock.CryptoObjectHelper;
 import com.denghaoqing.btsmartlock.MainActivity;
+import com.denghaoqing.btsmartlock.utilities.security;
 import com.denghaoqing.btsmartlock.FingerprintAuthCallBack;
 import com.denghaoqing.btsmartlock.R;
 
@@ -41,19 +46,22 @@ public class UnlockPageFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private boolean isFingerPrint=true;
+
 
     private ImageView imgFinger;
     private ImageView imgSecureAuthStat;
     private ImageView imgCommStat;
     private ImageView imgAuthStat;
     private TextView txtTips;
-
+    private EditText codeEnter;
+    private Button mButton;
 
     private FingerprintManagerCompat fingerprintManager = null;
     private FingerprintAuthCallBack myAuthCallback = null;
     private CancellationSignal cancellationSignal = null;
 
+    private boolean isAuthSuccess=false;
+    private boolean isFingerPrint=true;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -100,6 +108,9 @@ public class UnlockPageFragment extends Fragment {
         }
         //imgFinger = (ImageView)View.
 
+
+
+        //handle the fingerprint verification result
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -108,10 +119,15 @@ public class UnlockPageFragment extends Fragment {
                 Log.d("FingerPrint", "msg: " + msg.what + " ,arg1: " + msg.arg1);
                 switch (msg.what) {
                     case MainActivity.MSG_AUTH_SUCCESS:
-                        Log.d("FingerPrint", "msg: " + msg.what + " ,arg1: " + msg.arg1);
+                        isAuthSuccess = true;
                         imgFinger.setImageResource( R.drawable.ic_verified_user_black_24dp) ;
                         imgSecureAuthStat.setVisibility(View.VISIBLE);
                         txtTips.setText(R.string.finger_auth_success_tips);
+                        codeEnter.setVisibility(View.VISIBLE);
+                        codeEnter.setInputType(InputType.TYPE_CLASS_TEXT);
+                        mButton.setVisibility(View.VISIBLE);
+                        codeEnter.setText("");
+                        mButton.setText("UNLOCK");
                         Toast.makeText(getContext(), "Auth Success!", Toast.LENGTH_SHORT).show();
 
                         break;
@@ -133,15 +149,14 @@ public class UnlockPageFragment extends Fragment {
 
         // init fingerprint.
         fingerprintManager = FingerprintManagerCompat.from(getContext());
-
         if (!fingerprintManager.isHardwareDetected()) {
-
+            isFingerPrint = false;
         } else if (!fingerprintManager.hasEnrolledFingerprints()) {
             // no fingerprint image has been enrolled.
 
         } else {
             try {
-                myAuthCallback = new FingerprintAuthCallBack(handler) ;
+                myAuthCallback = new FingerprintAuthCallBack(handler);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -174,18 +189,75 @@ public class UnlockPageFragment extends Fragment {
         imgCommStat=(ImageView)view.findViewById(R.id.img_stat_remote);
         imgAuthStat=(ImageView)view.findViewById(R.id.img_stat_auth);
         txtTips = (TextView)view.findViewById(R.id.txtTips);
+        codeEnter=(EditText)view.findViewById(R.id.et_code);
+        mButton=(Button)view.findViewById(R.id.submit);
+
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isFingerPrint &&  !isAuthSuccess){
+                    SharedPreferences pref= getContext().getSharedPreferences("userinfo",Context.MODE_PRIVATE);
+                    if(security.md5(codeEnter.getText().toString()).equals(pref.getString("pin","N/A"))){
+                        isAuthSuccess = true;
+                        imgFinger.setImageResource( R.drawable.ic_verified_user_black_24dp) ;
+                        imgSecureAuthStat.setVisibility(View.VISIBLE);
+                        txtTips.setText(R.string.pin_auth_success_tips);
+                        codeEnter.setVisibility(View.VISIBLE);
+                        codeEnter.setInputType(InputType.TYPE_CLASS_TEXT);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setText("UNLOCK");
+                        codeEnter.setText("");
+                        Toast.makeText(getContext(), "Auth Success!", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getContext(), "Auth failed!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    //bluetooth communication
+                    Toast.makeText(getContext(), "BT Comm", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        if(isFingerPrint){
+            codeEnter.setVisibility(View.INVISIBLE);
+            codeEnter.setText("");
+            mButton.setVisibility(View.INVISIBLE);
+            mButton.setText("UNLOCK");
+        }else{
+            codeEnter.setVisibility(View.VISIBLE);
+            codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            mButton.setVisibility(View.VISIBLE);
+            codeEnter.setText("");
+            mButton.setText("Authorize");
+        }
+
         imgFinger.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isFingerPrint) {
-                    imgFinger.setImageResource(R.drawable.ic_lock_outline_black_24dp);
-                    txtTips.setText(R.string.pin_auth_tips);
-                    isFingerPrint = false;
-                }else{
-                    imgFinger.setImageResource(R.drawable.ic_fingerprint_black_24dp);
-                    txtTips.setText(R.string.finger_auth_tips);
-                    isFingerPrint = true;
+                if(!isAuthSuccess){
+                    if(isFingerPrint) {
+                        imgFinger.setImageResource(R.drawable.ic_lock_outline_black_24dp);
+                        txtTips.setText(R.string.pin_auth_tips);
+                        isFingerPrint = false;
+                        codeEnter.setVisibility(View.VISIBLE);
+                        codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                        codeEnter.setText("");
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setText("Authorize");
+
+                    }else{
+                        imgFinger.setImageResource(R.drawable.ic_fingerprint_black_24dp);
+                        txtTips.setText(R.string.finger_auth_tips);
+                        codeEnter.setVisibility(View.INVISIBLE);
+                        codeEnter.setText("");
+                        isFingerPrint = true;
+                        mButton.setVisibility(View.INVISIBLE);
+                        mButton.setText("UNLOCK");
+                    }
                 }
+
             }
         });
         return view;

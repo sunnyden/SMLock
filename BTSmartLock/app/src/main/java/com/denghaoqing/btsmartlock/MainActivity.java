@@ -142,6 +142,13 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_settings:
                 break;
             case R.id.nav_logout :
+                SharedPreferences userinfo = this.getSharedPreferences("userinfo", MODE_PRIVATE);
+                SharedPreferences.Editor editor = userinfo.edit();
+                editor.clear();
+                editor.apply();
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.getMenu().findItem(R.id.nav_login).setVisible(true);
+                navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
                 break;
             default:
                 break;

@@ -3,10 +3,12 @@ package com.denghaoqing.btsmartlock;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -24,14 +26,17 @@ import android.text.TextUtils;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -43,6 +48,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.denghaoqing.btsmartlock.utilities.security;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -83,6 +90,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         populateAutoComplete();
@@ -372,13 +380,46 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return isLoggedin;
         }
 
+
+
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
 
+
             if (success) {
-                finish();
+                LayoutInflater inflater = getLayoutInflater();//It works, but i can't figure out the principle,we need to use it connected with a view group
+                final View layout= inflater.inflate(R.layout.dialog_setpasswd,(ViewGroup)findViewById(R.id.drawer_layout));//to avoid crash due to the null pointer error. former is the layout of the dialog, latter one we consider the "layout" as a view group
+
+                final AlertDialog.Builder builder= new AlertDialog.Builder(LoginActivity.this);
+
+                builder.setView(layout);
+                builder.setTitle("PIN Setting");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText pin1,pin2;
+                        pin1=(EditText)layout.findViewById(R.id.pincode0);
+                        pin2=(EditText)layout.findViewById(R.id.pincode1);
+                        if(pin1.getText().toString().equals(pin2.getText().toString())){
+                            Log.d("hi","hi");
+                            Log.d("pwd",pin1.getText().toString());
+                            SharedPreferences userinfo = LoginActivity.this.getSharedPreferences("userinfo", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userinfo.edit();
+                            editor.putString("pin",security.md5(pin1.getText().toString()));
+                            editor.apply();
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Please check your PIN",Toast.LENGTH_SHORT).show();
+                            pin2.setError(getString(R.string.info_wrong_pin));
+                            pin2.requestFocus();
+                        }
+                    }
+                });
+                builder.show();
+
+
             } else {
                 if(err_code == 404){
                     mPasswordView.setError(getString(R.string.error_service_unavailable));
