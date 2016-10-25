@@ -9,7 +9,7 @@
 	//import my library.
 	require("./inc/basic.php");
 	require("./inc/database.php");
-
+	require("./inc/encrypt.php");
 	
 	
 	$action=$_POST['action'];
@@ -63,14 +63,14 @@
 		case 2:
 			/*
 			*Case 1:Get Mac action
-			*Require:action,token
+			*Require:action,token,locknum,uid
 			*Return:Success:{"error":0,"mac":"xx:xx:xx:xx:xx:xx"}
 			*			  Failure:{"error":404,"info":"Unknown Lock ID"}
 			*/
 			if(validate($_POST['uid'],$_POST['token']))
 			{
-				$locknum=$_POST['lknum'];
-				$sql=mysql_query("select * from tb_lock where locknum=${locknum}");
+				$locknum=$_POST['locknum'];
+				$sql=mysql_query("select * from tb_lock where lknum=${locknum}");
 				if(mysql_num_rows($sql)==0)
 				{
 					echo(getJson(array("error" => 404,"info"=>"Unknown Lock ID")));
@@ -95,6 +95,22 @@
 			*/
 			echo(getJson(array("error"=>0,"valid"=>validate($_POST['uid'],$_POST['token']))));
 			break;
+		
+		case 4:
+			/*
+			*Case 4:Get Auth Code
+			*Require: uid,token,mac
+			*Return sample:{"error":0,"code":000}
+			*/
+			if(validate($_POST['uid'],$_POST['token']))
+			{
+				echo(getJson(array("error"=>0,"code"=>getVerfCode($_POST['mac']))));
+			}
+			else
+			{
+				echo(getJson(array("error" => 503,"info" => "Authorization error")));
+			}
+			
 		
 	}
 	
