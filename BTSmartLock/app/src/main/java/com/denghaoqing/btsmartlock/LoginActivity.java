@@ -365,6 +365,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     SharedPreferences.Editor editor = userinfo.edit();
                     editor.putString("username",mUsername);
                     editor.putInt("uid",result.getInt("uid"));
+                    editor.putInt("gid",result.getInt("gid"));
+                    editor.putString("gpname",result.getString("gpname"));
                     editor.putInt("isLoggedin",1);
                     editor.putString("token",result.getString("token"));
                     editor.apply();
@@ -403,14 +405,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         pin1=(EditText)layout.findViewById(R.id.pincode0);
                         pin2=(EditText)layout.findViewById(R.id.pincode1);
                         if(pin1.getText().toString().equals(pin2.getText().toString())){
-                            Log.d("hi","hi");
-                            Log.d("pwd",pin1.getText().toString());
+                            //Log.d("hi","hi");
+                            //Log.d("pwd",pin1.getText().toString());
                             SharedPreferences userinfo = LoginActivity.this.getSharedPreferences("userinfo", MODE_PRIVATE);
                             SharedPreferences.Editor editor = userinfo.edit();
                             editor.putString("pin",security.md5(pin1.getText().toString()));
                             editor.apply();
                             finish();
                         }else{
+                            SharedPreferences userinfo = LoginActivity.this.getSharedPreferences("userinfo", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userinfo.edit();
+                            editor.clear().apply();
                             Toast.makeText(getApplicationContext(),"Please check your PIN",Toast.LENGTH_SHORT).show();
                             pin2.setError(getString(R.string.info_wrong_pin));
                             pin2.requestFocus();
