@@ -1,15 +1,23 @@
 package com.denghaoqing.btsmartlock.fragments;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.os.CancellationSignal;
 import android.support.v4.app.Fragment;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
@@ -23,14 +31,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.denghaoqing.btsmartlock.CryptoObjectHelper;
 import com.denghaoqing.btsmartlock.MainActivity;
+import com.denghaoqing.btsmartlock.utilities.BTCommSrv;
 import com.denghaoqing.btsmartlock.utilities.security;
 import com.denghaoqing.btsmartlock.FingerprintAuthCallBack;
 import com.denghaoqing.btsmartlock.R;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +68,7 @@ public class UnlockPageFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
 
+    public static final int REQUEST_ENABLE_BT = 3;
 
     private ImageView imgFinger;
     private ImageView imgSecureAuthStat;
@@ -55,6 +77,16 @@ public class UnlockPageFragment extends Fragment {
     private TextView txtTips;
     private EditText codeEnter;
     private Button mButton;
+    private ProgressBar procCommStat;
+    private ProgressBar procAuthStat;
+    /*BT Init*/
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private BTCommSrv mBTCommSrv = null;
+    private getMac mgetMac=null;
+    private GetAuthCode mGetAuthCode = null;
+    private int BTRetryCount=0;
+
+
 
     private FingerprintManagerCompat fingerprintManager = null;
     private FingerprintAuthCallBack myAuthCallback = null;
@@ -66,6 +98,9 @@ public class UnlockPageFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    public String mac="";
+    public String code="";
 
     private Handler handler = null;
     private OnFragmentInteractionListener mListener;
@@ -108,6 +143,12 @@ public class UnlockPageFragment extends Fragment {
         }
         //imgFinger = (ImageView)View.
 
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();//Get default bt adapter
+        if (mBluetoothAdapter == null) {
+            FragmentActivity activity = getActivity();
+            Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            activity.finish();
+        }
 
 
         //handle the fingerprint verification result
@@ -180,6 +221,127 @@ public class UnlockPageFragment extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            // Otherwise, setup the chat session
+        }
+        if(mBTCommSrv==null){
+            mBTCommSrv=new BTCommSrv(getActivity(),mHandler);
+        }
+    }
+
+
+    /**
+     * The Handler that gets information back from the BluetoothChatService
+     */
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            FragmentActivity activity = getActivity();
+            switch (msg.what) {
+                case BTCommSrv.Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BTCommSrv.STATE_CONNECTED:
+                            //Connected
+                            SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                            mGetAuthCode=new GetAuthCode(mac,userinfo.getString("token","null"),userinfo.getInt("uid",-1));
+                            mGetAuthCode.execute((Void)null);
+                            break;
+                        case BTCommSrv.STATE_CONNECTING:
+                            //Connecting
+                            break;
+                        case BTCommSrv.STATE_LISTEN:
+                        case BTCommSrv.STATE_NONE:
+                            //not connected
+                            break;
+                    }
+                    break;
+                case BTCommSrv.Constants.MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+
+                    //Message sent
+                    break;
+                case BTCommSrv.Constants.MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Log.e("Tag",readMessage);
+                    try {
+                        JSONObject mResult = new JSONObject(readMessage);
+                        if(mResult.getInt("result")==0){
+                            procAuthStat.setVisibility(View.GONE);
+                            imgAuthStat.setImageResource(R.drawable.ic_check_circle_black_24dp);
+                            imgAuthStat.setVisibility(View.VISIBLE);
+                            mBTCommSrv.stop();
+                            mButton.setEnabled(true);
+                            codeEnter.setEnabled(true);
+                            codeEnter.setText("");
+                            BTRetryCount = 0;
+                            Toast.makeText(getContext(),"Unlocked!",Toast.LENGTH_SHORT).show();
+                        }else{
+                            procAuthStat.setVisibility(View.GONE);
+                            imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                            imgAuthStat.setVisibility(View.VISIBLE);
+                            mButton.setEnabled(true);
+                            codeEnter.setEnabled(true);
+                            Log.e("Post","Wrong json result");
+                            mBTCommSrv.stop();
+                            BTRetryCount = 0;
+                        }
+                    }catch(Exception e){
+                        BTRetryCount++;
+                        if(BTRetryCount==1){
+                            String message="code<"+code+">";
+                            byte[] byteToSend = message.getBytes();//transform it into byte[]
+                            mBTCommSrv.write(byteToSend);
+                        }else{
+                            procAuthStat.setVisibility(View.GONE);
+                            imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                            imgAuthStat.setVisibility(View.VISIBLE);
+                            mButton.setEnabled(true);
+                            codeEnter.setEnabled(true);
+                            BTRetryCount = 0;
+                        }
+
+                       // mBTCommSrv.stop();
+                       Log.e("Post",e.toString());
+                    }
+                    //Message received
+                    break;
+                case BTCommSrv.Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    //msg.getData().getString(BTCommSrv.Constants.DEVICE_NAME);
+
+                    break;
+                case BTCommSrv.Constants.MESSAGE_TOAST:
+                    if (null != activity) {
+                        Toast.makeText(activity, msg.getData().getString(BTCommSrv.Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        }
+    };
+
+
+    /**
+     * Establish connection with other divice
+     */
+    private void connectDevice(String mac, boolean secure) {
+        // Get the BluetoothDevice object
+        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
+        // Attempt to connect to the device
+        Log.d("BTComm","Attemp to connect");
+        mBTCommSrv.connect(device, secure);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -188,6 +350,8 @@ public class UnlockPageFragment extends Fragment {
         imgSecureAuthStat = (ImageView)view.findViewById(R.id.img_stat_security);
         imgCommStat=(ImageView)view.findViewById(R.id.img_stat_remote);
         imgAuthStat=(ImageView)view.findViewById(R.id.img_stat_auth);
+        procCommStat=(ProgressBar)view.findViewById(R.id.onhttpConnProc);
+        procAuthStat=(ProgressBar)view.findViewById(R.id.onBtCommProc);
         txtTips = (TextView)view.findViewById(R.id.txtTips);
         codeEnter=(EditText)view.findViewById(R.id.et_code);
         mButton=(Button)view.findViewById(R.id.submit);
@@ -215,6 +379,12 @@ public class UnlockPageFragment extends Fragment {
                 else{
                     //bluetooth communication
                     Toast.makeText(getContext(), "BT Comm", Toast.LENGTH_SHORT).show();
+                    mButton.setEnabled(false);
+                    codeEnter.setEnabled(false);
+                    //Get MAC Address from remote server
+                    SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                    mgetMac = new getMac(codeEnter.getText().toString(),userinfo.getString("token","null"),userinfo.getInt("uid",-1));
+                    mgetMac.execute((Void)null);
                 }
             }
         });
@@ -286,4 +456,174 @@ public class UnlockPageFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+    public class getMac extends AsyncTask<Void, Void, Boolean> {
+
+        private final String mUID;
+        private final String mCode;
+        private final String mToken;
+
+        getMac(String code, String token,int uid) {
+            mUID = String.valueOf(uid);
+            mCode = code;
+            mToken = token;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
+            JSONObject result;
+            try {
+
+
+                URL url= new URL("http://58.63.232.138:62078/lock/api.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                conn.connect();
+                DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+                String content = "action=2&token="+mToken+"&uid="+mUID+"&locknum="+mCode;
+                out.writeBytes(content);
+                out.flush();
+                out.close();
+                InputStreamReader input=new InputStreamReader(conn.getInputStream());
+                BufferedReader buffer = new BufferedReader(input);
+                String resultData="",inputLine=null;
+                while(((inputLine=buffer.readLine())!=null)) {
+                    resultData += inputLine + "\n";
+                }
+                Log.e("Http",resultData);
+                result=new JSONObject(resultData);
+
+            } catch (Exception e){
+
+                return false;
+            }
+            boolean isValid=false;
+            try {
+
+                if(result.getInt("error")==0) {
+                    mac=result.getString("mac");
+                    isValid=true;
+                }
+            }catch (Exception e){
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success)
+            {
+                procCommStat.setVisibility(View.GONE);
+                imgCommStat.setImageResource(R.drawable.ic_check_circle_black_24dp);
+                imgCommStat.setVisibility(View.VISIBLE);
+                imgAuthStat.setVisibility(View.GONE);
+                procAuthStat.setVisibility(View.VISIBLE);
+                connectDevice(mac,false);
+            }else{
+                procCommStat.setVisibility(View.GONE);
+                imgCommStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                imgCommStat.setVisibility(View.VISIBLE);
+                mButton.setEnabled(true);
+                codeEnter.setEnabled(true);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+
+
+    public class GetAuthCode extends AsyncTask<Void, Void, Boolean> {
+
+        private final String mUID;
+        private final String mMac;
+        private final String mToken;
+
+        GetAuthCode(String mac, String token,int uid) {
+            mUID = String.valueOf(uid);
+            mMac = mac;
+            mToken = token;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
+            JSONObject result;
+            try {
+
+
+                URL url= new URL("http://58.63.232.138:62078/lock/api.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                conn.connect();
+                DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+                String content = "action=4&token="+mToken+"&uid="+mUID+"&mac="+mMac;
+                out.writeBytes(content);
+                out.flush();
+                out.close();
+                InputStreamReader input=new InputStreamReader(conn.getInputStream());
+                BufferedReader buffer = new BufferedReader(input);
+                String resultData="",inputLine=null;
+                while(((inputLine=buffer.readLine())!=null)) {
+                    resultData += inputLine + "\n";
+                }
+                Log.e("Http",resultData);
+                result=new JSONObject(resultData);
+
+            } catch (Exception e){
+
+                return false;
+            }
+            boolean isValid=false;
+            try {
+
+                if(result.getInt("error")==0) {
+                    code=String.valueOf(result.getInt("code"));
+                    isValid=true;
+                }
+            }catch (Exception e){
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success)
+            {
+                String message="code<"+code+">";
+                byte[] byteToSend = message.getBytes();//transform it into byte[]
+                mBTCommSrv.write(byteToSend);
+            }else{
+                procAuthStat.setVisibility(View.GONE);
+                imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                imgAuthStat.setVisibility(View.VISIBLE);
+                mButton.setEnabled(true);
+                codeEnter.setEnabled(true);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+
+        }
+    }
+
 }

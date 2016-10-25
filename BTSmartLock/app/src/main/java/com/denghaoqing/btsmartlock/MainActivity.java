@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE},READ_PHONE_STATE_REQUEST_CODE);
         }
 
+
+
         navigationView.setNavigationItemSelectedListener(this);
     }
 

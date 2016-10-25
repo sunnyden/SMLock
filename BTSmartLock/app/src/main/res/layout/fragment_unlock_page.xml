@@ -65,6 +65,13 @@
                 android:src="@drawable/ic_check_circle_black_24dp"
                 android:visibility="invisible" />
 
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/onhttpConnProc"
+                android:visibility="gone" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -85,6 +92,13 @@
                 android:id="@+id/img_stat_auth"
                 android:src="@drawable/ic_check_circle_black_24dp"
                 android:visibility="invisible" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/onBtCommProc"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
