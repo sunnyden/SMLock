@@ -42,3 +42,11 @@
 		}
 		return $is_legal;
 	}
+	
+	function getGroupNameByID($gid){
+		$sql=mysql_query("select * from tb_usergroup where gid=${gid}");
+		$result = mysql_fetch_array($sql);
+		return $result['groupname'];
+		
+	}
+?>
