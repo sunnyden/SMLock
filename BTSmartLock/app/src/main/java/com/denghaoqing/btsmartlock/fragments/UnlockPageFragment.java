@@ -194,7 +194,7 @@ public class UnlockPageFragment extends Fragment {
             isFingerPrint = false;
         } else if (!fingerprintManager.hasEnrolledFingerprints()) {
             // no fingerprint image has been enrolled.
-
+            isFingerPrint = false;
         } else {
             try {
                 myAuthCallback = new FingerprintAuthCallBack(handler);
@@ -202,6 +202,7 @@ public class UnlockPageFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+
 
 
 
@@ -377,14 +378,21 @@ public class UnlockPageFragment extends Fragment {
                     }
                 }
                 else{
-                    //bluetooth communication
-                    Toast.makeText(getContext(), "BT Comm", Toast.LENGTH_SHORT).show();
-                    mButton.setEnabled(false);
-                    codeEnter.setEnabled(false);
-                    //Get MAC Address from remote server
-                    SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                    mgetMac = new getMac(codeEnter.getText().toString(),userinfo.getString("token","null"),userinfo.getInt("uid",-1));
-                    mgetMac.execute((Void)null);
+                    if(mBluetoothAdapter.isEnabled()){
+                        //bluetooth communication
+
+                        mButton.setEnabled(false);
+                        codeEnter.setEnabled(false);
+                        //Get MAC Address from remote server
+                        SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                        mgetMac = new getMac(codeEnter.getText().toString(),userinfo.getString("token","null"),userinfo.getInt("uid",-1));
+                        mgetMac.execute((Void)null);
+                    }else{
+                        Toast.makeText(getContext(), "You need to enable bluetooth at first!", Toast.LENGTH_SHORT).show();
+                        Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+                    }
+
                 }
             }
         });
