@@ -1,6 +1,7 @@
 package com.denghaoqing.btsmartlock;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -125,6 +126,8 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
+
 
 
 

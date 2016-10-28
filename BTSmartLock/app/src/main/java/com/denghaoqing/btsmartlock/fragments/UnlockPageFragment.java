@@ -70,6 +70,7 @@ public class UnlockPageFragment extends Fragment {
 
     public static final int REQUEST_ENABLE_BT = 3;
 
+
     private ImageView imgFinger;
     private ImageView imgSecureAuthStat;
     private ImageView imgCommStat;
@@ -94,6 +95,7 @@ public class UnlockPageFragment extends Fragment {
 
     private boolean isAuthSuccess=false;
     private boolean isFingerPrint=true;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -225,14 +227,19 @@ public class UnlockPageFragment extends Fragment {
     public void onStart(){
         super.onStart();
         if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // Otherwise, setup the chat session
+            try{
+                //We don't need user's approval!
+                mBluetoothAdapter.enable();
+            }catch(Exception e){
+                Log.e("Error",e.toString());
+            }
+
         }
         if(mBTCommSrv==null){
             mBTCommSrv=new BTCommSrv(getActivity(),mHandler);
         }
     }
+
 
 
     /**
@@ -388,9 +395,12 @@ public class UnlockPageFragment extends Fragment {
                         mgetMac = new getMac(codeEnter.getText().toString(),userinfo.getString("token","null"),userinfo.getInt("uid",-1));
                         mgetMac.execute((Void)null);
                     }else{
-                        Toast.makeText(getContext(), "You need to enable bluetooth at first!", Toast.LENGTH_SHORT).show();
-                        Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+                        Toast.makeText(getContext(), "Enabling Bluetooth", Toast.LENGTH_SHORT).show();
+                        try{
+                            mBluetoothAdapter.enable();
+                        }catch(Exception e){
+                            Log.e("Error",e.toString());
+                        }
                     }
 
                 }
