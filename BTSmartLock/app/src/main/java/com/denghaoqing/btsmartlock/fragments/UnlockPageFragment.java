@@ -370,6 +370,7 @@ public class UnlockPageFragment extends Fragment {
                 if(!isFingerPrint &&  !isAuthSuccess){
                     SharedPreferences pref= getContext().getSharedPreferences("userinfo",Context.MODE_PRIVATE);
                     if(security.md5(codeEnter.getText().toString()).equals(pref.getString("pin","N/A"))){
+                        cancellationSignal.cancel();
                         isAuthSuccess = true;
                         imgFinger.setImageResource( R.drawable.ic_verified_user_black_24dp) ;
                         imgSecureAuthStat.setVisibility(View.VISIBLE);
