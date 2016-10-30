@@ -51,6 +51,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -304,7 +306,8 @@ public class UnlockPageFragment extends Fragment {
                     }catch(Exception e){
                         BTRetryCount++;
                         if(BTRetryCount==1){
-                            String message="code<"+code+">";
+                            SimpleDateFormat df = new SimpleDateFormat("yy,MM,dd,HH,mm,ss");
+                            String message="code<"+code+">time<"+df.format(new Date())+">";
                             byte[] byteToSend = message.getBytes();//transform it into byte[]
                             mBTCommSrv.write(byteToSend);
                         }else{
@@ -627,7 +630,9 @@ public class UnlockPageFragment extends Fragment {
         protected void onPostExecute(final Boolean success) {
             if (success)
             {
-                String message="code<"+code+">";
+                SimpleDateFormat df = new SimpleDateFormat("yy,MM,dd,HH,mm,ss");
+                String message="code<"+code+">time<"+df.format(new Date())+">";
+                Log.d("command",message);
                 byte[] byteToSend = message.getBytes();//transform it into byte[]
                 mBTCommSrv.write(byteToSend);
             }else{
