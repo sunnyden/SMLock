@@ -110,9 +110,74 @@
 			{
 				echo(getJson(array("error" => 503,"info" => "Authorization error")));
 			}
+			break;
+		case 5:
+			/*
+			*Case 5:Update Lock Status
+			*Require: uid,token,lkcode and stat
+			*Return Sample:{"error":0,"stat":1(0)}
+			*/
+			if(validate($_POST['uid'],$_POST['token']) && !empty($_POST['lkcode']) && !empty($_POST['stat']))
+			{
+				$sql=mysql_query("update tb_lock set stat=$_POST[stat] where lknum=$_POST[lkcode]");
 			
-		
+				if(mysql_num_rows($sql)==0)
+				{
+					echo(getJson(array("error" => 404,"info"=>"Unknown Lock ID")));
+				}
+				else
+				{
+					echo(getJson(array("error" => 0,"stat" => $_POST['stat'])));
+				}
+			}
+			break;
+		case 6:
+			/*
+			*Case 6:Get Lock Lists(Privileged Action)
+			*Require: uid, token
+			*Return:Json results
+			*/
+			if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+			{
+				$sql=mysql_query("select * from tb_lock");
+				$lkidset="[";
+				$lknumset="[";
+				$lkmacset="[";
+				$lkstatset="[";
+				$lknameset="[";
+				$lkaccessset="[";
+				$count=mysql_num_rows($sql);
+				while($row = mysql_fetch_array($sql))
+				{
+					$lkidset.="$row[lkid],";
+					$lknumset.="$row[lknum],";
+					$lkstatset.="$row[status],";
+					$lknameset.="\"$row[lkname]\",";
+					$lkaccessset.="\"$row[access]\",";
+					$lkmacset.="\"$row[lkmac]\",";
+				}
+				$lkidset.="0]";
+				$lknumset.="0]";
+				$lkstatset.="0]";
+				$lknameset.="\"\"]";
+				$lkaccessset.="\"\"]";
+				$lkmacset.="\"\"]";
+				echo(getJsonPlus(array("error" => 0,"count" => $count,"lkid"=>$lkidset,
+				"lknum"=>$lknumset,"lkname"=>$lknameset,"lkmac"=>$lkmacset,"lkstat"=>$lkstatset,"lkaccess"=>$lkaccessset)));
+			}
+			else
+			{
+				echo(getJson(array("error" => 404,"info"=>"Unknown Lock ID")));
+			}
+			break;
+		case 7:
+			/*
+			*Case 7:Update Lock Property
+			*Require: uid, token
+			*Return:Json results
+			*/
+			break;
+			
 	}
-	
 	mysql_close($sql_conn);
 ?>
