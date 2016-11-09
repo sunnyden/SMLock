@@ -175,15 +175,20 @@
 			}
 			else
 			{
-				echo(getJson(array("error" => 404,"info"=>"Unknown Lock ID")));
+				echo(getJson(array("error" => 403,"info"=>"Permission denied")));
 			}
 			break;
 		case 7:
 			/*
 			*Case 7:Update Lock Property
-			*Require: uid, token
+			*Require: uid, token, lock_info
 			*Return:Json results
 			*/
+			if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+			{
+				$sql=mysql_query("update tb_lock set status=$_POST[lkstat],lknum=$_POST[lknum],lkmac='$_POST[lkmac]',lkname='$_POST[lkname]',access='$_POST[lkaccess]' where lkid=$_POST[lkid]");
+			}
+			echo mysql_error();
 			break;
 			
 	}

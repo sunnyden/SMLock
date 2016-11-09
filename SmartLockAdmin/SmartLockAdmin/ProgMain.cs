@@ -159,9 +159,10 @@ namespace SmartLockAdmin
                     if (isChange == DialogResult.Yes)
                     {
 
-                        Regex r = new Regex(@"^([0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F])$");
-
-                        if (r.Match(lkListView.Rows[e.RowIndex].Cells[3].Value.ToString()).Success)
+                        Regex macMatch = new Regex(@"^([0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F])$");
+                        Regex permissionMatch = new Regex(@"^(((\d,?)+))$");
+                        if (permissionMatch.Match(lkListView.Rows[e.RowIndex].Cells[4].Value.ToString()).Success && 
+                            macMatch.Match(lkListView.Rows[e.RowIndex].Cells[3].Value.ToString()).Success)
                         {
                             lklst.AcceptChanges();
                             POSTText("action=7&lkid=" + lkListView.Rows[e.RowIndex].Cells[0].Value.ToString() +
@@ -176,7 +177,7 @@ namespace SmartLockAdmin
                         }
                         else
                         {
-                            MessageBox.Show("保存失败！请输入合法的MAC地址！格式如下：12:34:56:AB:CD:EF（注意大小写）", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("保存失败！请输入合法的MAC地址或权限序列！格式如下：\n Mac地址：12:34:56:AB:CD:EF（注意大小写）\n 权限序列：1,2,3,4 或 0（无权限设置）", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             lklst.RejectChanges();
                         }
                     }
@@ -227,7 +228,7 @@ namespace SmartLockAdmin
             {
                 responce = reader.ReadToEnd();
             }
-            //MessageBox.Show(responce);
+            
             updateData();
 
         }

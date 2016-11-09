@@ -15,3 +15,20 @@ C:\Users\exede\documents\visual studio 2015\Projects\SmartLockAdmin\SmartLockAdm
 C:\Users\exede\documents\visual studio 2015\Projects\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.application
 C:\Users\exede\documents\visual studio 2015\Projects\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.exe
 C:\Users\exede\documents\visual studio 2015\Projects\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.pdb
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\SmartLockAdmin.exe.config
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\SmartLockAdmin.exe.manifest
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\SmartLockAdmin.application
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\SmartLockAdmin.exe
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\SmartLockAdmin.pdb
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\Microsoft.ReportViewer.WinForms.dll
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\bin\x86\Debug\zh-CHS\Microsoft.ReportViewer.WinForms.resources.dll
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.csprojResolveAssemblyReference.cache
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.ProgMain.resources
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.signin.resources
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.Properties.Resources.resources
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.csproj.GenerateResource.Cache
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.TrustInfo.xml
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.exe.manifest
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.application
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.exe
+C:\Users\exede\Downloads\WecenterMobileAndroidRestructure-master\SmartLockAdmin\SmartLockAdmin\obj\x86\Debug\SmartLockAdmin.pdb
