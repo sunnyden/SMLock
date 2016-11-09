@@ -79,7 +79,15 @@
 				{
 					$row = mysql_fetch_array($sql);
 					$mac=$row['lkmac'];
-					echo(getJson(array("error" => 0,"mac" => $mac)));
+					if($row['access']==0||in_array(getGpId($_POST['uid']),explode(',',$row['access'])))
+					{
+						echo(getJson(array("error" => 0,"mac" => $mac)));
+					}
+					else
+					{
+						echo(getJson(array("error" => 403,"info" => "Permission Denied")));
+					}
+					
 				}
 			}
 			else

@@ -80,6 +80,13 @@
 		return $is_legal;
 	}
 	
+	function getGpId($uid)
+	{
+		$sql=mysql_query("select * from tb_users where uid=${uid}");
+		$row = mysql_fetch_array($sql);
+		return $row['gid'];
+	}
+	
 	function getGroupNameByID($gid){
 		$sql=mysql_query("select * from tb_usergroup where gid=${gid}");
 		$result = mysql_fetch_array($sql);
