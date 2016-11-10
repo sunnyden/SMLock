@@ -121,6 +121,12 @@
     <Compile Include="INIProfile.cs" />
     <Compile Include="LkListModel.cs" />
     <Compile Include="LoginJson.cs" />
+    <Compile Include="MDIParent1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MDIParent1.Designer.cs">
+      <DependentUpon>MDIParent1.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProgMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +141,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="MDIParent1.resx">
+      <DependentUpon>MDIParent1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ProgMain.resx">
       <DependentUpon>ProgMain.cs</DependentUpon>
     </EmbeddedResource>

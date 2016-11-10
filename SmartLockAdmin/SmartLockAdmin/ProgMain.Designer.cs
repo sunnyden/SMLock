@@ -30,12 +30,18 @@ namespace SmartLockAdmin
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lkListView = new System.Windows.Forms.DataGridView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.新建锁ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.刷新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lkMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.删除记录ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.新建ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.刷新ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.lkListView)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            this.lkMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // lkListView
@@ -44,13 +50,13 @@ namespace SmartLockAdmin
             this.lkListView.AllowUserToDeleteRows = false;
             this.lkListView.AllowUserToResizeColumns = false;
             this.lkListView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.lkListView.DataError +=new DataGridViewDataErrorEventHandler(this.lklstView_DataError);
-            
             this.lkListView.Location = new System.Drawing.Point(12, 28);
             this.lkListView.Name = "lkListView";
             this.lkListView.RowTemplate.Height = 23;
             this.lkListView.Size = new System.Drawing.Size(887, 359);
             this.lkListView.TabIndex = 1;
+            this.lkListView.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.onCellClick);
+            this.lkListView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.lklstView_DataError);
             // 
             // menuStrip1
             // 
@@ -76,6 +82,35 @@ namespace SmartLockAdmin
             this.刷新ToolStripMenuItem.Text = "刷新";
             this.刷新ToolStripMenuItem.Click += new System.EventHandler(this.RefreshToolStripMenuItem_Click);
             // 
+            // lkMenu
+            // 
+            this.lkMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.刷新ToolStripMenuItem1,
+            this.新建ToolStripMenuItem,
+            this.删除记录ToolStripMenuItem});
+            this.lkMenu.Name = "contextMenuStrip1";
+            this.lkMenu.Size = new System.Drawing.Size(153, 92);
+            // 
+            // 删除记录ToolStripMenuItem
+            // 
+            this.删除记录ToolStripMenuItem.Name = "删除记录ToolStripMenuItem";
+            this.删除记录ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.删除记录ToolStripMenuItem.Text = "删除";
+            this.删除记录ToolStripMenuItem.Click += new System.EventHandler(this.删除记录ToolStripMenuItem_Click);
+            // 
+            // 新建ToolStripMenuItem
+            // 
+            this.新建ToolStripMenuItem.Name = "新建ToolStripMenuItem";
+            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.新建ToolStripMenuItem.Text = "新建";
+            // 
+            // 刷新ToolStripMenuItem1
+            // 
+            this.刷新ToolStripMenuItem1.Name = "刷新ToolStripMenuItem1";
+            this.刷新ToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.刷新ToolStripMenuItem1.Text = "刷新";
+            this.刷新ToolStripMenuItem1.Click += new System.EventHandler(this.刷新ToolStripMenuItem1_Click);
+            // 
             // ProgMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -90,6 +125,7 @@ namespace SmartLockAdmin
             ((System.ComponentModel.ISupportInitialize)(this.lkListView)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.lkMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -100,5 +136,9 @@ namespace SmartLockAdmin
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem 新建锁ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 刷新ToolStripMenuItem;
+        private ContextMenuStrip lkMenu;
+        private ToolStripMenuItem 删除记录ToolStripMenuItem;
+        private ToolStripMenuItem 新建ToolStripMenuItem;
+        private ToolStripMenuItem 刷新ToolStripMenuItem1;
     }
 }

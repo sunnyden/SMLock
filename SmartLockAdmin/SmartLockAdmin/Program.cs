@@ -16,7 +16,7 @@ namespace SmartLockAdmin
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ProgMain());
+            Application.Run(new MDIParent1());
         }
     }
 }
