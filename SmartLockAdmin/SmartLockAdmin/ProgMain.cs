@@ -144,10 +144,7 @@ namespace SmartLockAdmin
 
         }
 
-        private void noAction(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
+       
 
         private void lkListView_CellContentChange(object sender, DataGridViewCellEventArgs e)
         {
@@ -203,7 +200,7 @@ namespace SmartLockAdmin
 
         private void RefreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            updateData();
             
         }
 
