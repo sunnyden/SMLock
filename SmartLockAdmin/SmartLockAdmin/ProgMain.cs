@@ -276,6 +276,14 @@ namespace SmartLockAdmin
         {
             updateData();
         }
+
+        private void 新建ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddLock childForm = new AddLock();
+            childForm.MdiParent = this.MdiParent;
+            //childForm.Text = "窗口 " + childFormNumber++;
+            childForm.Show();
+        }
     }
     
 }

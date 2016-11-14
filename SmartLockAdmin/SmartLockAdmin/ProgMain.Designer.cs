@@ -36,9 +36,9 @@ namespace SmartLockAdmin
             this.新建锁ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.刷新ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lkMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.删除记录ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.新建ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.刷新ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.新建ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.删除记录ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.lkListView)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.lkMenu.SuspendLayout();
@@ -91,25 +91,26 @@ namespace SmartLockAdmin
             this.lkMenu.Name = "contextMenuStrip1";
             this.lkMenu.Size = new System.Drawing.Size(153, 92);
             // 
-            // 删除记录ToolStripMenuItem
-            // 
-            this.删除记录ToolStripMenuItem.Name = "删除记录ToolStripMenuItem";
-            this.删除记录ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.删除记录ToolStripMenuItem.Text = "删除";
-            this.删除记录ToolStripMenuItem.Click += new System.EventHandler(this.删除记录ToolStripMenuItem_Click);
-            // 
-            // 新建ToolStripMenuItem
-            // 
-            this.新建ToolStripMenuItem.Name = "新建ToolStripMenuItem";
-            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.新建ToolStripMenuItem.Text = "新建";
-            // 
             // 刷新ToolStripMenuItem1
             // 
             this.刷新ToolStripMenuItem1.Name = "刷新ToolStripMenuItem1";
             this.刷新ToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.刷新ToolStripMenuItem1.Text = "刷新";
             this.刷新ToolStripMenuItem1.Click += new System.EventHandler(this.刷新ToolStripMenuItem1_Click);
+            // 
+            // 新建ToolStripMenuItem
+            // 
+            this.新建ToolStripMenuItem.Name = "新建ToolStripMenuItem";
+            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.新建ToolStripMenuItem.Text = "新建";
+            this.新建ToolStripMenuItem.Click += new System.EventHandler(this.新建ToolStripMenuItem_Click);
+            // 
+            // 删除记录ToolStripMenuItem
+            // 
+            this.删除记录ToolStripMenuItem.Name = "删除记录ToolStripMenuItem";
+            this.删除记录ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.删除记录ToolStripMenuItem.Text = "删除";
+            this.删除记录ToolStripMenuItem.Click += new System.EventHandler(this.删除记录ToolStripMenuItem_Click);
             // 
             // ProgMain
             // 
