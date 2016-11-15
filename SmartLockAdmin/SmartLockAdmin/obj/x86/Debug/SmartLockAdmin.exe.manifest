@@ -97,14 +97,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SmartLockAdmin.exe" size="35328">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SmartLockAdmin.exe" size="35840">
       <assemblyIdentity name="SmartLockAdmin" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>4758Ya6iT+WQo3q8FvfLkdUbOt9I/xrGAn70mQazUZo=</dsig:DigestValue>
+        <dsig:DigestValue>In5jDn76zhJUB/w5RVqaxYeUQzRlGy/y6zMpl4fkR5E=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

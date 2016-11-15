@@ -1,5 +1,6 @@
 ﻿using InTheHand.Windows.Forms;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace SmartLockAdmin
@@ -29,6 +30,16 @@ namespace SmartLockAdmin
                 
             }
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Regex macMatch = new Regex(@"^([0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F])$");
+            Regex permissionMatch = new Regex(@"^(((\d,?)+))$");
+            if (permissionMatch.Match(txtPermission.Text).Success && macMatch.Match(txtMAC.Text).Success)
+            {
+
+            }
         }
     }
 }

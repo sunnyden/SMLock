@@ -12,6 +12,10 @@ namespace SmartLockAdmin
 {
     public partial class MDIParent1 : Form
     {
+        public static string username = "";
+        public static string token = "";
+        public static int uid = -1;
+        public static bool isLogin = false;
         private int childFormNumber = 0;
 
         public MDIParent1()
@@ -19,54 +23,27 @@ namespace SmartLockAdmin
             InitializeComponent();
         }
 
-        private void ShowNewForm(object sender, EventArgs e)
+        private void showLkManageMent(object sender, EventArgs e)
         {
             ProgMain childForm = new ProgMain();
             childForm.MdiParent = this;
             //childForm.Text = "窗口 " + childFormNumber++;
             childForm.Show();
         }
-
-        private void OpenFile(object sender, EventArgs e)
+        //showLogin
+        private void showLogin(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            openFileDialog.Filter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
-            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                string FileName = openFileDialog.FileName;
-            }
+            signin login = new signin();
+            login.ShowDialog();
+            updateLoginInfo();
         }
 
-        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            saveFileDialog.Filter = "文本文件(*.txt)|*.txt|所有文件(*.*)|*.*";
-            if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                string FileName = saveFileDialog.FileName;
-            }
-        }
 
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void CutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void PasteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        
 
         private void StatusBarToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -98,6 +75,59 @@ namespace SmartLockAdmin
             foreach (Form childForm in MdiChildren)
             {
                 childForm.Close();
+            }
+        }
+
+        private void MDIParent1_Load(object sender, EventArgs e)
+        {
+            updateLoginInfo();
+            
+        }
+        
+        public void updateLoginInfo()
+        {
+            INIProfile mINIProfile = new INIProfile();
+
+            bool isException = false;
+
+            int i = 0;
+
+            signin msignin = new signin();
+
+            try
+            {
+                uid = mINIProfile.GetIntValue("uid", -1);
+                username = mINIProfile.GetStringValue("username", "N/A");
+                token = mINIProfile.GetStringValue("token", "N/A");
+            }
+            catch (Exception ex)
+            {
+                isLogin = false;
+                isException = true;
+            }
+            if ((username == "N/A" || token == "N/A" || uid == -1) && !isException)
+            {
+                isLogin = false;
+            }
+            else
+            {
+                if (!isException)
+                {
+                    isLogin = true;
+                }
+
+            }
+            if (!isLogin)
+            {
+                toolStripStatusLabel.Text = "未登录！";
+                toolStripStatusLabel.ForeColor = Color.Red;
+                loginToolStripMenuItem.Visible = true;
+            }
+            else
+            {
+                toolStripStatusLabel.Text = "已登录！";
+                toolStripStatusLabel.ForeColor = Color.Green;
+                loginToolStripMenuItem.Visible = false;
             }
         }
     }

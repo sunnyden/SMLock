@@ -133,6 +133,7 @@
     </Compile>
     <Compile Include="BTDeviceModel.cs" />
     <Compile Include="INIProfile.cs" />
+    <Compile Include="InternetUtilities.cs" />
     <Compile Include="LkListModel.cs" />
     <Compile Include="LoginJson.cs" />
     <Compile Include="MDIParent1.cs">

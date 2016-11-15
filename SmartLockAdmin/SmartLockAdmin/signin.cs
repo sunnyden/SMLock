@@ -19,6 +19,7 @@ namespace SmartLockAdmin
 {
     public partial class signin : Form
     {
+        private bool isSuccess = false;
         public signin()
         {
             InitializeComponent();
@@ -82,6 +83,11 @@ namespace SmartLockAdmin
                         mINIProfile.WriteProfile("uid", result.uid);
                         mINIProfile.WriteProfile("token", result.token);
                         mINIProfile.WriteProfile("username", result.username);
+                        MDIParent1.uid = result.uid;
+                        MDIParent1.token = result.token;
+                        MDIParent1.username = result.username;
+                        this.FormClosing += new FormClosingEventHandler(this.onClose);
+                        isSuccess = true;
                         this.Close();
                     }
                     catch (Exception ex)
@@ -96,6 +102,16 @@ namespace SmartLockAdmin
                 MessageBox.Show("登录失败，用户名或密码错误！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             //MessageBox.Show(result.token);
+        }
+
+        private void onClose(object Sender,FormClosingEventArgs args)
+        {
+            if (isSuccess)
+            {
+                MDIParent1.isLogin = true;
+                
+                
+            }
         }
     }
 }

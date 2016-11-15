@@ -23,57 +23,14 @@ namespace SmartLockAdmin
         {
             InitializeComponent();
         }
-        public static string username = "";
-        public static string token = "";
-        public static int uid = -1;
+       
         private int sel_lkid = -1;
         private string sel_lkname = "";
         private DataTable lklst = new DataTable();
 
         private void ProgMain_Load(object sender, EventArgs e)
         {
-
-            INIProfile mINIProfile = new INIProfile();
-
-            bool isException = false;
-            while (true)
-            {
-                int i = 0;
-
-                signin msignin = new signin();
-                if (i == 1)
-                {
-                    this.Close();
-                }
-                try
-                {
-                    uid = mINIProfile.GetIntValue("uid", -1);
-                    username = mINIProfile.GetStringValue("username", "N/A");
-                    token = mINIProfile.GetStringValue("token", "N/A");
-                }
-                catch (Exception ex)
-                {
-                    msignin.ShowDialog();
-                    i++;
-                    isException = true;
-                }
-                if ((username == "N/A" || token == "N/A" || uid == -1) && !isException)
-                {
-                    msignin.ShowDialog();
-                    i++;
-                }
-                else
-                {
-                    if (!isException)
-                    {
-                        break;
-                    }
-
-                }
-            }
-
             updateData();
-
         }
 
         public void updateData()
@@ -88,7 +45,7 @@ namespace SmartLockAdmin
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ProtocolVersion = new Version(1, 1);
-            byte[] data = Encoding.UTF8.GetBytes("action=6&uid=" + uid.ToString() + "&token=" + token);
+            byte[] data = Encoding.UTF8.GetBytes("action=6&uid=" + MDIParent1.uid.ToString() + "&token=" + MDIParent1.token);
             request.ContentLength = data.Length;
             using (Stream reqStream = request.GetRequestStream())
             {
@@ -171,7 +128,7 @@ namespace SmartLockAdmin
                                 "&lkmac=" + lkListView.Rows[e.RowIndex].Cells[3].Value.ToString() +
                                 "&lkaccess=" + lkListView.Rows[e.RowIndex].Cells[4].Value.ToString() +
                                 "&lkstat=" + lkListView.Rows[e.RowIndex].Cells[5].Value.ToString() +
-                                "&uid=" + uid + "&token=" + token);
+                                "&uid=" + MDIParent1.uid + "&token=" + MDIParent1.token);
 
 
                         }
