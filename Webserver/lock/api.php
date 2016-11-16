@@ -187,8 +187,56 @@
 			if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
 			{
 				$sql=mysql_query("update tb_lock set status=$_POST[lkstat],lknum=$_POST[lknum],lkmac='$_POST[lkmac]',lkname='$_POST[lkname]',access='$_POST[lkaccess]' where lkid=$_POST[lkid]");
+				echo(getJson(array("error" => 0,"info"=>"Operation succeed")));
+			}else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Permission denied")));
 			}
-			echo mysql_error();
+			
+			break;
+		case 8:
+			/*
+			*Case 8:Add Lock
+			*Require:uid,token,lock_info
+			*/
+			if($_POST['lkname']!="" && $_POST['mac']!="" && $_POST['access']!=""){
+				if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+				{
+					$count=mysql_query("SELECT max(lknum) as maximum FROM tb_lock");
+					$result=mysql_fetch_array($count);
+					$lknum=$result['maximum']+1;
+					$lkname=$_POST['lkname'];
+					$mac=$_POST['mac'];
+					$access=$_POST['access'];
+					$sql=mysql_query("INSERT INTO tb_lock VALUES (NULL, '${lkname}', '${mac}', ${lknum},'${access}',0)");
+					echo(getJson(array("error" => 0,"info"=>"Operation succeed")));
+				}else
+				{
+					echo(getJson(array("error" => 403,"info"=>"permission denied")));
+				}
+			}else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Wrong input")));
+			}
+			break;
+		case 9:
+			/*
+			*Case 8:Delete Lock
+			*Require:uid,token,lock_info
+			*/
+			if($_POST['lkid']!=""){
+				if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+				{
+					$count=mysql_query("DELETE FROM tb_lock WHERE lkid=$_POST[lkid]");
+					echo(getJson(array("error" => 0,"info"=>"Operation succeed")));
+				}else
+				{
+					echo(getJson(array("error" => 403,"info"=>"permission denied")));
+				}
+			}else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Wrong input")));
+			}
 			break;
 			
 	}
