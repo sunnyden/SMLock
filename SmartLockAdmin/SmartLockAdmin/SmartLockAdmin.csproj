@@ -135,6 +135,7 @@
     <Compile Include="INIProfile.cs" />
     <Compile Include="InternetUtilities.cs" />
     <Compile Include="LkListModel.cs" />
+    <Compile Include="GeneralResultModel.cs" />
     <Compile Include="LoginJson.cs" />
     <Compile Include="MDIParent1.cs">
       <SubType>Form</SubType>

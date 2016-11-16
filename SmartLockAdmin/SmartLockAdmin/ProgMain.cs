@@ -223,8 +223,27 @@ namespace SmartLockAdmin
         {
             if (MessageBox.Show("是否确删除锁："+sel_lkname+" (ID:"+sel_lkid.ToString()+")? 注意，操作不可取消!", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes && sel_lkid != -1)
             {
-
+                bool endTry = false;
+                bool hasSucceed = false;
+                while (!endTry && !hasSucceed)
+                {
+                    InternetUtilities mInternetUTilities = new InternetUtilities();
+                    string responce = mInternetUTilities.POSTText("action=9&lkid=" + sel_lkid.ToString() + "&uid=" + MDIParent1.uid.ToString() + "&token=" + MDIParent1.token);
+                    if (mInternetUTilities.isSucceed(responce))
+                    {
+                        MessageBox.Show("操作成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        hasSucceed = true;
+                    }
+                    else
+                    {
+                        if (MessageBox.Show("操作失败！服务器返回信息：" + mInternetUTilities.msg, "提示", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) != DialogResult.Retry)
+                        {
+                            endTry = true;
+                        }
+                    }
+                }
             }
+            updateData();
             sel_lkid = -1;
             sel_lkname = "";
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,8 @@ namespace SmartLockAdmin
 {
     class InternetUtilities
     {
-        private string POSTText(string contents)
+        public string msg="";
+        public string POSTText(string contents)
         {
             string uri = "http://58.63.232.138:62078/lock/api.php";
             string responce = "";
@@ -34,6 +36,22 @@ namespace SmartLockAdmin
 
             return responce;
 
+        }
+
+        public bool isSucceed(string responce)
+        {
+            try
+            {
+                var mStream = new MemoryStream(Encoding.Default.GetBytes(responce));
+                var serializer = new DataContractJsonSerializer(typeof(GeneralResultModel));
+                GeneralResultModel result = (GeneralResultModel)serializer.ReadObject(mStream);
+                msg = result.info;
+                return result.error==0?true:false;
+            }catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+            return false;
         }
     }
 }
