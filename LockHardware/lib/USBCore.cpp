@@ -19,6 +19,9 @@
 #include "USBAPI.h"
 #include "PluggableUSB.h"
 #include <stdlib.h>
+#define F_CPU 16000000L
+#define USB_VID 0x2341
+#define USB_PID 0x8036
 
 #if defined(USBCON)
 

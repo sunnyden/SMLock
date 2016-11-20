@@ -1,5 +1,4 @@
-
-#include"lib/Arduino.h" 
+#include"lib/Arduino.h"
 #include"utilities.h"
 
 // Declared weak in Arduino.h to allow user redefinitions.

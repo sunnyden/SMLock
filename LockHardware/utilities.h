@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<string.h>
-#include <DS3231.h>
-#include <Wire.h>
+#include "DS3231.h"
+#include "wire/Wire.h"
 
 DS3231 Clock;
 int hexAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};

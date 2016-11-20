@@ -246,6 +246,6 @@ long map(long, long, long, long, long);
 
 #endif
 
-#include "pins_arduino.h"
+#include "../pins_board.h"
 
 #endif
