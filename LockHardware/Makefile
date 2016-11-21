@@ -3,27 +3,28 @@ MCU = atmega328p
 avrg++ = "avr-g++"
 avrgcc = "avr-gcc"
 avrar = "avr-ar"
+AVRDUDE = "C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude"
+avrobjcp = "avr-objcopy"
 INCLUDE = "-Ilib/"
 ARGS = -c -g -Os -Wall -Wextra -std=gnu++11 -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10609 -DARDUINO_AVR_LEONARDO -DARDUINO_ARCH_AVR  -DUSB_VID=0x2341 -DUSB_PID=0x8036 '-DUSB_MANUFACTURER="Unknown"' '-DUSB_PRODUCT="Arduino Leonardo"'
 C_FLAGS = -c -g -Os -Wall -Wextra -std=gnu11 -ffunction-sections -fdata-sections -MMD -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10609 -DARDUINO_AVR_LEONARDO -DARDUINO_ARCH_AVR  -DUSB_VID=0x2341 -DUSB_PID=0x8036 '-DUSB_MANUFACTURER="Unknown"' '-DUSB_PRODUCT="Arduino Leonardo"'
 ASM_ARGS = -c -g -x assembler-with-cpp -mmcu=atmega32u4 -DF_CPU=16000000L -DARDUINO=10609 -DARDUINO_AVR_LEONARDO -DARDUINO_ARCH_AVR  -DUSB_VID=0x2341 -DUSB_PID=0x8036 '-DUSB_MANUFACTURER="Unknown"' '-DUSB_PRODUCT="Arduino Leonardo"'
 ELF_ARGS = -Wall -Wextra -Os -Wl,--gc-sections -mmcu=atmega32u4
-
+EEP_ARGS = -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0
+HEX_ARGS = -O ihex -R .eeprom
 AR_File = wiring_pulse.o WInterrupts.o hooks.o wiring.o wiring_analog.o\
 wiring_digital.o wiring_pulse.o wiring_shift.o CDC.o HardwareSerial.o\
 HardwareSerial0.o HardwareSerial1.o HardwareSerial2.o HardwareSerial3.o\
 IPAddress.o PluggableUSB.o Print.o Stream.o Tone.o USBCore.o WMath.o\
 WString.o abi.o main.o new.o
 
-FILES=`ls *.o`
 
 all:core.a DS3231.o Wire.o twi.o
-	$(avrgcc) $(ELF_ARGS) -o "./out.elf" core.a DS3231.o Wire.o twi.o -Llib/
+	$(avrgcc) $(ELF_ARGS) -o "./out.elf" DS3231.o Wire.o twi.o core.a -Llib/
+	$(avrobjcp) $(EEP_ARGS) ./out.elf ./eeprom.eep
+	$(avrobjcp) $(HEX_ARGS) ./out.elf ./eeprom.hex
 core.a:$(AR_File)
-	@for target in $(AR_File); \
-	do                        \
-	$(avrar) rcs ./core.a $$target; \
-	done
+	$(avrar) rcs ./core.a *.o
 main.o: main.cpp 
 	$(avrg++) $(ARGS) $(INCLUDE) main.cpp
 wiring_pulse.o:
@@ -83,8 +84,9 @@ Wire.o:
 	$(avrg++) $(ARGS) $(INCLUDE) wire/Wire.cpp
 twi.o:
 	$(avrgcc) $(C_FLAGS) $(INCLUDE) wire/utility/twi.c
-
+upload:
+	$(AVRDUDE) -C./conf/avrdude.conf -v -patmega32u4 -cavr109 -PCOM4 -b57600 -D -Uflash:w:./eeprom.hex:i 
 clean:
-	rm -rf *.o *.d out.elf out.hex
+	rm -rf *.o *.d *.a out.elf out.hex
 	
 	
