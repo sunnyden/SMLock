@@ -298,7 +298,7 @@ public class UnlockPageFragment extends Fragment {
                                         conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                                         conn.connect();
                                         DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-                                        String content = "action=2&token="+userinfo.getString("token","null")+"&uid="+userinfo.getInt("uid",-1)+"&stat=1&lkcode="+codeLock;
+                                        String content = "action=5&token="+userinfo.getString("token","null")+"&uid="+userinfo.getInt("uid",-1)+"&stat=1&lkcode="+codeLock;
                                         out.writeBytes(content);
                                         out.flush();
                                         out.close();
@@ -308,13 +308,13 @@ public class UnlockPageFragment extends Fragment {
                                         while(((inputLine=buffer.readLine())!=null)) {
                                             resultData += inputLine + "\n";
                                         }
-                                        Log.e("Http",resultData);
+                                        Log.e("HttpPostExec",resultData);
                                     } catch (Exception e){
-
+                                        e.printStackTrace();
                                     }
                                 }
                             });
-                            mUploadResult.run();
+                            mUploadResult.start();
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_check_circle_black_24dp);
                             imgAuthStat.setVisibility(View.VISIBLE);

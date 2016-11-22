@@ -127,9 +127,9 @@
 			*/
 			if(validate($_POST['uid'],$_POST['token']) && !empty($_POST['lkcode']) && !empty($_POST['stat']))
 			{
-				$sql=mysql_query("update tb_lock set stat=$_POST[stat] where lknum=$_POST[lkcode]");
+				$sql=mysql_query("update tb_lock set status=$_POST[stat] where lknum=$_POST[lkcode]");
 			
-				if(mysql_num_rows($sql)==0)
+				if(mysql_affected_rows()==0)
 				{
 					echo(getJson(array("error" => 404,"info"=>"Unknown Lock ID")));
 				}
