@@ -88,7 +88,7 @@ public class UnlockPageFragment extends Fragment {
     private getMac mgetMac=null;
     private GetAuthCode mGetAuthCode = null;
     private int BTRetryCount=0;
-
+    private String codeLock="";
 
 
     private FingerprintManagerCompat fingerprintManager = null;
@@ -284,6 +284,37 @@ public class UnlockPageFragment extends Fragment {
                     try {
                         JSONObject mResult = new JSONObject(readMessage);
                         if(mResult.getInt("result")==0){
+                            Thread mUploadResult = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+
+                                        URL url= new URL("http://58.63.232.138:62078/lock/api.php");
+                                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                                        conn.setDoOutput(true);
+                                        conn.setDoInput(true);
+                                        conn.setRequestMethod("POST");
+                                        conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                                        conn.connect();
+                                        DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+                                        String content = "action=2&token="+userinfo.getString("token","null")+"&uid="+userinfo.getInt("uid",-1)+"&stat=1&lkcode="+codeLock;
+                                        out.writeBytes(content);
+                                        out.flush();
+                                        out.close();
+                                        InputStreamReader input=new InputStreamReader(conn.getInputStream());
+                                        BufferedReader buffer = new BufferedReader(input);
+                                        String resultData="",inputLine=null;
+                                        while(((inputLine=buffer.readLine())!=null)) {
+                                            resultData += inputLine + "\n";
+                                        }
+                                        Log.e("Http",resultData);
+                                    } catch (Exception e){
+
+                                    }
+                                }
+                            });
+                            mUploadResult.run();
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_check_circle_black_24dp);
                             imgAuthStat.setVisibility(View.VISIBLE);
@@ -396,7 +427,8 @@ public class UnlockPageFragment extends Fragment {
                         codeEnter.setEnabled(false);
                         //Get MAC Address from remote server
                         SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-                        mgetMac = new getMac(codeEnter.getText().toString(),userinfo.getString("token","null"),userinfo.getInt("uid",-1));
+                        codeLock=codeEnter.getText().toString();
+                        mgetMac = new getMac(codeLock,userinfo.getString("token","null"),userinfo.getInt("uid",-1));
                         mgetMac.execute((Void)null);
                     }else{
                         Toast.makeText(getContext(), "Enabling Bluetooth", Toast.LENGTH_SHORT).show();
