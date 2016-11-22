@@ -2,6 +2,7 @@ package com.denghaoqing.btsmartlock.utilities;
 
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * This Class is modified by Haoqing Deng, adapting it into the bluetooth communication class
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +71,7 @@ public class BTCommSrv {
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     /**
-     * Constructor. Prepares a new BluetoothChat session.
+     * Constructor. Prepares a new Bluetooth  session.
      *
      * @param context The UI Activity Context
      * @param handler A Handler to send messages back to the UI Activity
@@ -82,7 +83,7 @@ public class BTCommSrv {
     }
 
     /**
-     * Set the current state of the chat connection
+     * Set the current state of the BT connection
      *
      * @param state An integer defining the current connection state
      */
@@ -102,7 +103,7 @@ public class BTCommSrv {
     }
 
     /**
-     * Start the chat service. Specifically start AcceptThread to begin a
+     * Start the BT Communicate service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume()
      */
     public synchronized void start() {
@@ -259,9 +260,9 @@ public class BTCommSrv {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST_ERR_CONN);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, "Unable to connect device");
+        bundle.putString(Constants.TOAST_ERR_CONN, "Unable to connect device");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -530,16 +531,18 @@ public class BTCommSrv {
     }
     public interface Constants {
 
-        // Message types sent from the BluetoothChatService Handler
+        //Message ID for the handler
         public static final int MESSAGE_STATE_CHANGE = 1;
         public static final int MESSAGE_READ = 2;
         public static final int MESSAGE_WRITE = 3;
         public static final int MESSAGE_DEVICE_NAME = 4;
         public static final int MESSAGE_TOAST = 5;
+        public static final int MESSAGE_TOAST_ERR_CONN = 6;
 
-        // Key names received from the BluetoothChatService Handler
+        //Content of the para.
         public static final String DEVICE_NAME = "device_name";
         public static final String TOAST = "toast";
+        public static final String TOAST_ERR_CONN = "toast_err_conn";
 
     }
 }

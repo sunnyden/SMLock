@@ -53,6 +53,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 /**
@@ -89,7 +91,9 @@ public class UnlockPageFragment extends Fragment {
     private GetAuthCode mGetAuthCode = null;
     private int BTRetryCount=0;
     private String codeLock="";
-
+    private final int TIMER_TICK=9;
+    private Timer mTimerToKill=new Timer(); //This timer is used to avoid the endless waiting for the not responding device.
+    private TimerTask killTask;
 
     private FingerprintManagerCompat fingerprintManager = null;
     private FingerprintAuthCallBack myAuthCallback = null;
@@ -318,6 +322,7 @@ public class UnlockPageFragment extends Fragment {
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_check_circle_black_24dp);
                             imgAuthStat.setVisibility(View.VISIBLE);
+                            mTimerToKill.cancel();
                             mBTCommSrv.stop();
                             mButton.setEnabled(true);
                             codeEnter.setEnabled(true);
@@ -327,6 +332,7 @@ public class UnlockPageFragment extends Fragment {
                         }else{
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                            mTimerToKill.cancel();
                             imgAuthStat.setVisibility(View.VISIBLE);
                             mButton.setEnabled(true);
                             codeEnter.setEnabled(true);
@@ -344,6 +350,7 @@ public class UnlockPageFragment extends Fragment {
                         }else{
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                            mTimerToKill.cancel();
                             imgAuthStat.setVisibility(View.VISIBLE);
                             mButton.setEnabled(true);
                             codeEnter.setEnabled(true);
@@ -366,6 +373,17 @@ public class UnlockPageFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
                     }
                     break;
+                case BTCommSrv.Constants.MESSAGE_TOAST_ERR_CONN:
+                    procAuthStat.setVisibility(View.GONE);
+                    imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
+                    imgAuthStat.setVisibility(View.VISIBLE);
+                    mButton.setEnabled(true);
+                    codeEnter.setEnabled(true);
+                    mTimerToKill.cancel();
+                    mBTCommSrv.stop();
+                    BTRetryCount = 0;
+                    Toast.makeText(activity, msg.getData().getString(BTCommSrv.Constants.TOAST_ERR_CONN),
+                            Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -379,6 +397,18 @@ public class UnlockPageFragment extends Fragment {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(mac);
         // Attempt to connect to the device
         Log.d("BTComm","Attemp to connect");
+        mTimerToKill=new Timer();
+        killTask = new TimerTask() {
+            @Override
+            public void run() {
+                Message msg = mHandler.obtainMessage(BTCommSrv.Constants.MESSAGE_TOAST_ERR_CONN);
+                Bundle bundle = new Bundle();
+                bundle.putString(BTCommSrv.Constants.TOAST_ERR_CONN, "Device Not Responding");
+                msg.setData(bundle);
+                mHandler.sendMessage(msg);
+            }
+        };
+        mTimerToKill.schedule(killTask,10000);//Deadline: 15 seconds!
         mBTCommSrv.connect(device, secure);
     }
 
