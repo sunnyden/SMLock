@@ -122,12 +122,14 @@ namespace SmartLockAdmin
                 toolStripStatusLabel.Text = "未登录！";
                 toolStripStatusLabel.ForeColor = Color.Red;
                 loginToolStripMenuItem.Visible = true;
+                lockToolStripMenuItem.Visible = false;
             }
             else
             {
                 toolStripStatusLabel.Text = "已登录！";
                 toolStripStatusLabel.ForeColor = Color.Green;
                 loginToolStripMenuItem.Visible = false;
+                lockToolStripMenuItem.Visible = true;
             }
         }
     }

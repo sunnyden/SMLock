@@ -99,7 +99,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="InTheHand.Net.Personal">
-      <HintPath>..\..\..\..\Desktop\InTheHand.Net.Personal.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\个人项目\InTheHand.Net.Personal\X86\3.3.909.0\InTheHand.Net.Personal.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
     <Reference Include="Microsoft.ReportViewer.WinForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />

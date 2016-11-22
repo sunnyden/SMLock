@@ -89,26 +89,26 @@ namespace SmartLockAdmin
             this.新建ToolStripMenuItem,
             this.删除记录ToolStripMenuItem});
             this.lkMenu.Name = "contextMenuStrip1";
-            this.lkMenu.Size = new System.Drawing.Size(153, 92);
+            this.lkMenu.Size = new System.Drawing.Size(101, 70);
             // 
             // 刷新ToolStripMenuItem1
             // 
             this.刷新ToolStripMenuItem1.Name = "刷新ToolStripMenuItem1";
-            this.刷新ToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.刷新ToolStripMenuItem1.Size = new System.Drawing.Size(100, 22);
             this.刷新ToolStripMenuItem1.Text = "刷新";
             this.刷新ToolStripMenuItem1.Click += new System.EventHandler(this.刷新ToolStripMenuItem1_Click);
             // 
             // 新建ToolStripMenuItem
             // 
             this.新建ToolStripMenuItem.Name = "新建ToolStripMenuItem";
-            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.新建ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.新建ToolStripMenuItem.Text = "新建";
             this.新建ToolStripMenuItem.Click += new System.EventHandler(this.新建ToolStripMenuItem_Click);
             // 
             // 删除记录ToolStripMenuItem
             // 
             this.删除记录ToolStripMenuItem.Name = "删除记录ToolStripMenuItem";
-            this.删除记录ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.删除记录ToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.删除记录ToolStripMenuItem.Text = "删除";
             this.删除记录ToolStripMenuItem.Click += new System.EventHandler(this.删除记录ToolStripMenuItem_Click);
             // 
@@ -121,7 +121,7 @@ namespace SmartLockAdmin
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "ProgMain";
-            this.Text = "main";
+            this.Text = "锁管理";
             this.Load += new System.EventHandler(this.ProgMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.lkListView)).EndInit();
             this.menuStrip1.ResumeLayout(false);
