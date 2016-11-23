@@ -238,7 +238,82 @@
 				echo(getJson(array("error" => 403,"info"=>"Wrong input")));
 			}
 			break;
+		case 10:
+			/*
+			*Case 10:Get User Lists(Privileged Action)
+			*Require: uid, token
+			*Return:Json results
+			*/
+			if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+			{
+				$sql=mysql_query("select * from tb_users");
+				$uidset="[";
+				$usernameset="[";
+				$pwdset="[";
+				$gidset="[";
+				$count=mysql_num_rows($sql);
+				while($row = mysql_fetch_array($sql))
+				{
+					$uidset.="$row[uid],";
+					$usernameset.="\"$row[username]\",";
+					$pwdset.="\"$row[passwd]\",";
+					$gidset.="$row[gid],";
+				}
+				$uidset.="0]";
+				$usernameset.="\"\"]";
+				$gidset.="0]";
+				$pwdset.="\"\"]";
+				
+				echo(getJsonPlus(array("error" => 0,"count" => $count,"uid"=>$uidset,
+				"username"=>$usernameset,"gid"=>$gidset,"passwd"=>$pwdset)));
+			}
+			else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Permission denied")));
+			}
+			break;
+		case 11:
+			/*
+			*Case 1:Delete Username
+			*Require:uid,token,userid
+			*/
+			if($_POST['duid']!=""){
+				if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+				{
+					$count=mysql_query("DELETE FROM tb_users WHERE uid=$_POST[duid]");
+					echo(getJson(array("error" => 0,"info"=>"Operation succeed")));
+				}else
+				{
+					echo(getJson(array("error" => 403,"info"=>"permission denied")));
+				}
+			}else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Wrong input")));
+			}
+			break;
+		case 12:
+			/*
+			*Case 7:Update User Info
+			*Require: uid, token, userinfo_info
+			*Return:Json results
+			*/
+			if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+			{
+				if($_POST['ispwdchange']==1)
+				{
+					$npwd_md5=md5($_POST['npwd']);
+				}else{
+					$npwd_md5=$_POST['npwd'];
+				}
+				
+				$sql=mysql_query("update tb_users set username='$_POST[nuname]',gid=$_POST[ngid],passwd='${npwd_md5}' where uid=$_POST[nuid]");
+				echo(getJson(array("error" => 403,"info"=>mysql_error())));
+			}else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Permission denied")));
+			}
 			
+			break;
 	}
 	mysql_close($sql_conn);
 ?>

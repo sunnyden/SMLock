@@ -2,7 +2,7 @@
 
 namespace SmartLockAdmin
 {
-    partial class ProgMain
+    partial class UserManagement
     {
         /// <summary>
         /// Required designer variable.

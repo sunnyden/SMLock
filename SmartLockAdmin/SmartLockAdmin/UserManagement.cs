@@ -17,15 +17,15 @@ using System.Text.RegularExpressions;
 
 namespace SmartLockAdmin
 {
-    public partial class ProgMain : Form
+    public partial class UserManagement : Form
     {
-        public ProgMain()
+        public UserManagement()
         {
             InitializeComponent();
         }
        
-        private int sel_lkid = -1;
-        private string sel_lkname = "";
+        private int sel_uid = -1;
+        private string sel_uname = "";
         private DataTable lklst = new DataTable();
 
         private void ProgMain_Load(object sender, EventArgs e)
@@ -45,7 +45,7 @@ namespace SmartLockAdmin
             request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
             request.ProtocolVersion = new Version(1, 1);
-            byte[] data = Encoding.UTF8.GetBytes("action=6&uid=" + MDIParent1.uid.ToString() + "&token=" + MDIParent1.token);
+            byte[] data = Encoding.UTF8.GetBytes("action=10&uid=" + MDIParent1.uid.ToString() + "&token=" + MDIParent1.token);
             request.ContentLength = data.Length;
             using (Stream reqStream = request.GetRequestStream())
             {
@@ -60,8 +60,8 @@ namespace SmartLockAdmin
             }
 
             var mStream = new MemoryStream(Encoding.Default.GetBytes(responce));
-            var serializer = new DataContractJsonSerializer(typeof(LkListModel));
-            LkListModel result = (LkListModel)serializer.ReadObject(mStream);
+            var serializer = new DataContractJsonSerializer(typeof(UserListModel));
+            UserListModel result = (UserListModel)serializer.ReadObject(mStream);
             if (result.error == 403)
             {
                 File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\BTSML\\info.ini");
@@ -69,34 +69,28 @@ namespace SmartLockAdmin
                 Application.Exit();
             }
             lklst = new DataTable();
-            lklst.Columns.Add(new DataColumn("ID", typeof(int)));
-            lklst.Columns.Add(new DataColumn("NUM", typeof(int)));
-            lklst.Columns.Add(new DataColumn("NAME", typeof(string)));
-            lklst.Columns.Add(new DataColumn("MAC", typeof(string)));
-            lklst.Columns.Add(new DataColumn("ACCESS", typeof(string)));
-            lklst.Columns.Add(new DataColumn("STAT", typeof(int)));
+            lklst.Columns.Add(new DataColumn("UID", typeof(int)));
+            lklst.Columns.Add(new DataColumn("UNAME", typeof(string)));
+            lklst.Columns.Add(new DataColumn("PWD", typeof(string)));
+            lklst.Columns.Add(new DataColumn("GID", typeof(int)));
             DataRow dr;
             for (int i = 0; i < result.count; i++)
             {
                 dr = lklst.NewRow();
-                dr["ID"] = result.lkidset[i];
-                dr["NUM"] = result.lknumset[i];
-                dr["NAME"] = result.lknameset[i];
-                dr["MAC"] = result.lkmacset[i];
-                dr["ACCESS"] = result.lkaccessset[i];
-                dr["STAT"] = result.lkstatset[i];
+                dr["UID"] = result.uidset[i];
+                dr["UNAME"] = result.usernameset[i];
+                dr["PWD"] = result.pwdset[i];
+                dr["GID"] = result.gidset[i];
                 lklst.Rows.Add(dr);
             }
             lkListView.DataSource = lklst;
             lklst.AcceptChanges();
 
-            lkListView.Columns[0].HeaderCell.Value = "锁ID";
-            lkListView.Columns[1].HeaderCell.Value = "锁编号";
-            lkListView.Columns[2].HeaderCell.Value = "锁名称";
-            lkListView.Columns[3].HeaderCell.Value = "MAC地址";
-            lkListView.Columns[3].Width = 150;
-            lkListView.Columns[4].HeaderCell.Value = "权限管理";
-            lkListView.Columns[5].HeaderCell.Value = "锁状态";
+            lkListView.Columns[0].HeaderCell.Value = "用户ID";
+            lkListView.Columns[1].HeaderCell.Value = "用户名";
+            lkListView.Columns[2].HeaderCell.Value = "密钥";
+            lkListView.Columns[3].HeaderCell.Value = "用户组ID";
+            lkListView.Columns[2].Width = 200;
 
             //register the listener to mointor the change of the table
             this.lkListView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lkListView_CellContentChange);
@@ -116,27 +110,15 @@ namespace SmartLockAdmin
                     if (isChange == DialogResult.Yes)
                     {
 
-                        Regex macMatch = new Regex(@"^([0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F])$");
-                        Regex permissionMatch = new Regex(@"^(((\d,?)+))$");
-                        if (permissionMatch.Match(lkListView.Rows[e.RowIndex].Cells[4].Value.ToString()).Success &&
-                            macMatch.Match(lkListView.Rows[e.RowIndex].Cells[3].Value.ToString()).Success)
-                        {
-                            lklst.AcceptChanges();
-                            POSTText("action=7&lkid=" + lkListView.Rows[e.RowIndex].Cells[0].Value.ToString() +
-                                "&lknum=" + lkListView.Rows[e.RowIndex].Cells[1].Value.ToString() +
-                                "&lkname=" + lkListView.Rows[e.RowIndex].Cells[2].Value.ToString() +
-                                "&lkmac=" + lkListView.Rows[e.RowIndex].Cells[3].Value.ToString() +
-                                "&lkaccess=" + lkListView.Rows[e.RowIndex].Cells[4].Value.ToString() +
-                                "&lkstat=" + lkListView.Rows[e.RowIndex].Cells[5].Value.ToString() +
-                                "&uid=" + MDIParent1.uid + "&token=" + MDIParent1.token);
-
-
-                        }
-                        else
-                        {
-                            MessageBox.Show("保存失败！请输入合法的MAC地址或权限序列！格式如下：\n Mac地址：12:34:56:AB:CD:EF（注意大小写）\n 权限序列：1,2,3,4 或 0（无权限设置）", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            lklst.RejectChanges();
-                        }
+    
+                        lklst.AcceptChanges();
+                        
+                        POSTText("action=12&nuid=" + lkListView.Rows[e.RowIndex].Cells[0].Value.ToString() +
+                            "&nuname=" + lkListView.Rows[e.RowIndex].Cells[1].Value.ToString() +
+                            "&npwd=" + lkListView.Rows[e.RowIndex].Cells[2].Value.ToString() +
+                            "&ngid=" + lkListView.Rows[e.RowIndex].Cells[3].Value.ToString() +
+                            "&uid=" + MDIParent1.uid + "&token=" + MDIParent1.token+"&ispwdchange="+
+                            (e.ColumnIndex==2?"1":"0"));
                     }
                     else
                     {
@@ -150,7 +132,7 @@ namespace SmartLockAdmin
                 }
             } else
             {
-                MessageBox.Show("锁ID为索引，不允许修改！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("用户ID为索引，不允许修改！", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 lklst.RejectChanges();
             }
 
@@ -171,8 +153,8 @@ namespace SmartLockAdmin
                         lkListView.ClearSelection();
                         lkListView.Rows[e.RowIndex].Selected = true;
                     }
-                    sel_lkid = int.Parse(lkListView.Rows[e.RowIndex].Cells[0].Value.ToString());
-                    sel_lkname = lkListView.Rows[e.RowIndex].Cells[2].Value.ToString();
+                    sel_uid = int.Parse(lkListView.Rows[e.RowIndex].Cells[0].Value.ToString());
+                    sel_uname = lkListView.Rows[e.RowIndex].Cells[2].Value.ToString();
                     //show the menu
                     lkMenu.Show(MousePosition.X, MousePosition.Y);
                 }
@@ -208,7 +190,6 @@ namespace SmartLockAdmin
             {
                 responce = reader.ReadToEnd();
             }
-            
             updateData();
 
         }
@@ -221,14 +202,14 @@ namespace SmartLockAdmin
 
         private void 删除记录ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("是否确删除锁："+sel_lkname+" (ID:"+sel_lkid.ToString()+")? 注意，操作不可取消!", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes && sel_lkid != -1)
+            if (MessageBox.Show("是否确删除用户："+sel_uname+" (ID:"+sel_uid.ToString()+")? 注意，操作不可取消!", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes && sel_uid != -1)
             {
                 bool endTry = false;
                 bool hasSucceed = false;
                 while (!endTry && !hasSucceed)
                 {
                     InternetUtilities mInternetUTilities = new InternetUtilities();
-                    string responce = mInternetUTilities.POSTText("action=9&lkid=" + sel_lkid.ToString() + "&uid=" + MDIParent1.uid.ToString() + "&token=" + MDIParent1.token);
+                    string responce = mInternetUTilities.POSTText("action=11&duid=" + sel_uid.ToString() + "&uid=" + MDIParent1.uid.ToString() + "&token=" + MDIParent1.token);
                     if (mInternetUTilities.isSucceed(responce))
                     {
                         MessageBox.Show("操作成功！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -244,8 +225,8 @@ namespace SmartLockAdmin
                 }
             }
             updateData();
-            sel_lkid = -1;
-            sel_lkname = "";
+            sel_uid = -1;
+            sel_uname = "";
         }
 
         private void 刷新ToolStripMenuItem1_Click(object sender, EventArgs e)

@@ -134,8 +134,15 @@
     <Compile Include="BTDeviceModel.cs" />
     <Compile Include="INIProfile.cs" />
     <Compile Include="InternetUtilities.cs" />
+    <Compile Include="UserListModel.cs" />
     <Compile Include="LkListModel.cs" />
     <Compile Include="GeneralResultModel.cs" />
+    <Compile Include="UserManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserManagement.Designer.cs">
+      <DependentUpon>UserManagement.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginJson.cs" />
     <Compile Include="MDIParent1.cs">
       <SubType>Form</SubType>
@@ -143,11 +150,11 @@
     <Compile Include="MDIParent1.Designer.cs">
       <DependentUpon>MDIParent1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProgMain.cs">
+    <Compile Include="LkManagement.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProgMain.Designer.cs">
-      <DependentUpon>ProgMain.cs</DependentUpon>
+    <Compile Include="LkManagement.Designer.cs">
+      <DependentUpon>LkManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="signin.cs">
       <SubType>Form</SubType>
@@ -160,11 +167,14 @@
     <EmbeddedResource Include="AddLock.resx">
       <DependentUpon>AddLock.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserManagement.resx">
+      <DependentUpon>UserManagement.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MDIParent1.resx">
       <DependentUpon>MDIParent1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProgMain.resx">
-      <DependentUpon>ProgMain.cs</DependentUpon>
+    <EmbeddedResource Include="LkManagement.resx">
+      <DependentUpon>LkManagement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="signin.resx">
       <DependentUpon>signin.cs</DependentUpon>

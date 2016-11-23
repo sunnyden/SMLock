@@ -25,7 +25,7 @@ namespace SmartLockAdmin
 
         private void showLkManageMent(object sender, EventArgs e)
         {
-            ProgMain childForm = new ProgMain();
+            LkManagement childForm = new LkManagement();
             childForm.MdiParent = this;
             //childForm.Text = "窗口 " + childFormNumber++;
             childForm.Show();
@@ -131,6 +131,14 @@ namespace SmartLockAdmin
                 loginToolStripMenuItem.Visible = false;
                 lockToolStripMenuItem.Visible = true;
             }
+        }
+
+        private void 用户管理ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UserManagement childForm = new UserManagement();
+            childForm.MdiParent = this;
+            //childForm.Text = "窗口 " + childFormNumber++;
+            childForm.Show();
         }
     }
 }
