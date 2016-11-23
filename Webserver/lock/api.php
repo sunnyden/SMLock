@@ -293,7 +293,7 @@
 			break;
 		case 12:
 			/*
-			*Case 7:Update User Info
+			*Case 12:Update User Info
 			*Require: uid, token, userinfo_info
 			*Return:Json results
 			*/
@@ -312,7 +312,28 @@
 			{
 				echo(getJson(array("error" => 403,"info"=>"Permission denied")));
 			}
-			
+			break;
+		case 13:
+			/*
+			*Case 13:Add User
+			*Require:uid,token,user_info
+			*/
+			if($_POST['nuname']!="" && $_POST['npwd']!="" && $_POST['ngid']!=""){
+				if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+				{
+					$uname=$_POST['nuname'];
+					$pwd=md5($_POST['npwd']);
+					$gid=$_POST['ngid'];
+					$sql=mysql_query("INSERT INTO tb_users VALUES (NULL, '${uname}', '${pwd}', ${gid})");
+					echo(getJson(array("error" => 0,"info"=>"Operation succeed")));
+				}else
+				{
+					echo(getJson(array("error" => 403,"info"=>"permission denied")));
+				}
+			}else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Wrong input")));
+			}
 			break;
 	}
 	mysql_close($sql_conn);

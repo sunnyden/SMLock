@@ -154,7 +154,7 @@ namespace SmartLockAdmin
                         lkListView.Rows[e.RowIndex].Selected = true;
                     }
                     sel_uid = int.Parse(lkListView.Rows[e.RowIndex].Cells[0].Value.ToString());
-                    sel_uname = lkListView.Rows[e.RowIndex].Cells[2].Value.ToString();
+                    sel_uname = lkListView.Rows[e.RowIndex].Cells[1].Value.ToString();
                     //show the menu
                     lkMenu.Show(MousePosition.X, MousePosition.Y);
                 }
@@ -236,7 +236,7 @@ namespace SmartLockAdmin
 
         private void 新建ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddLock childForm = new AddLock();
+            AddUser childForm = new AddUser();
             childForm.MdiParent = this.MdiParent;
             //childForm.Text = "窗口 " + childFormNumber++;
             childForm.Show();

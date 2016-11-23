@@ -8,9 +8,9 @@ using System.Windows.Forms;
 
 namespace SmartLockAdmin
 {
-    public partial class AddLock : Form
+    public partial class AddUser : Form
     {
-        public AddLock()
+        public AddUser()
         {
             InitializeComponent();
         }
@@ -19,15 +19,15 @@ namespace SmartLockAdmin
         {
             SelectBluetoothDeviceDialog dialog = new SelectBluetoothDeviceDialog();
             dialog.ShowRemembered = true;//show memorized devices
-            dialog.ShowAuthenticated = true;//show authorized devices
-            dialog.ShowUnknown = true;//show unknown devices
+            dialog.ShowAuthenticated = true;//show authorized devices 
+            dialog.ShowUnknown = true;//show unknown devices 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                txtMAC.Text = "";
+                txtUname.Text = "";
                 for(int i = 0; i < 6; i++)
                 {
-                    txtMAC.Text += dialog.SelectedDevice.DeviceAddress.ToByteArray()[5-i].ToString("x2").ToUpper();//To get the iverse order of the addr
-                    if (i < 5) txtMAC.Text += ":";
+                    txtUname.Text += dialog.SelectedDevice.DeviceAddress.ToByteArray()[5-i].ToString("x2").ToUpper();//To get the iverse order of the addr
+                    if (i < 5) txtUname.Text += ":";
                 }
                 
                 
@@ -37,10 +37,7 @@ namespace SmartLockAdmin
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Regex macMatch = new Regex(@"^([0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F])$");
-            Regex permissionMatch = new Regex(@"^(((\d,?)+))$");
-            
-            if (permissionMatch.Match(txtPermission.Text).Success && macMatch.Match(txtMAC.Text).Success)
+            if (!String.IsNullOrEmpty(txtGid.Text) && !String.IsNullOrEmpty(txtUname.Text) && !String.IsNullOrEmpty(txtPwd.Text))
             {
               
                 bool endTry = false;
@@ -48,8 +45,8 @@ namespace SmartLockAdmin
                 while (!endTry && !hasSucceed)
                 {
                     InternetUtilities mInternetUTilities = new InternetUtilities();
-                    string responce = mInternetUTilities.POSTText("action=8&uid=" + MDIParent1.uid + "&token=" + MDIParent1.token + "&lkname=" +
-                        txtName.Text + "&mac=" + txtMAC.Text + "&access=" + txtPermission.Text);
+                    string responce = mInternetUTilities.POSTText("action=13&uid=" + MDIParent1.uid + "&token=" + MDIParent1.token + "&npwd=" +
+                        txtPwd.Text + "&nuname=" + txtUname.Text + "&ngid=" + txtGid.Text);
                     if (mInternetUTilities.isSucceed(responce))
                     {
 
