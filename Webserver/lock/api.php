@@ -128,13 +128,13 @@
 			if(validate($_POST['uid'],$_POST['token']) && !empty($_POST['lkcode']) && !empty($_POST['stat']))
 			{
 				$sql=mysql_query("update tb_lock set status=$_POST[stat] where lknum=$_POST[lkcode]");
-			
 				if(mysql_affected_rows()==0)
 				{
 					echo(getJson(array("error" => 404,"info"=>"Unknown Lock ID")));
 				}
 				else
 				{
+					$rec_sql=mysql_query("INSERT INTO tb_log VALUES (NULL, $_POST[uid], $_POST[lkcode], $_POST[stat],NULL)");
 					echo(getJson(array("error" => 0,"stat" => $_POST['stat'])));
 				}
 			}
@@ -333,6 +333,42 @@
 			}else
 			{
 				echo(getJson(array("error" => 403,"info"=>"Wrong input")));
+			}
+			break;
+		case 14:
+			/*
+			*Case 13:Get Lock Log
+			*Require:uid,token
+			*/
+			if(isPrivileged($_POST['uid']) && validate($_POST['uid'],$_POST['token']))
+			{
+				$sql=mysql_query("select * from tb_log");
+				$idset="[";
+				$usernameset="[";
+				$lknameset="[";
+				$statset="[";
+				$timeset="[";
+				$count=mysql_num_rows($sql);
+				while($row = mysql_fetch_array($sql))
+				{
+					$idset.="$row[id],";
+					$usernameset.="\"".getUnameByID($row['uid'])."\",";
+					$timeset.="\"$row[time]\",";
+					$lknameset.="\"".getLknameByID($row['lid'])."\",";
+					$statset.="$row[action],";
+				}
+				$idset.="0]";
+				$usernameset.="\"\"]";
+				$statset.="0]";
+				$lknameset.="\"\"]";
+				$timeset.="\"\"]";
+				
+				echo(getJsonPlus(array("error" => 0,"count" => $count,"id"=>$idset,
+				"username"=>$usernameset,"stat"=>$statset,"lkname"=>$lknameset,"time"=>$timeset)));
+			}
+			else
+			{
+				echo(getJson(array("error" => 403,"info"=>"Permission denied")));
 			}
 			break;
 	}

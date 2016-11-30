@@ -140,5 +140,12 @@ namespace SmartLockAdmin
             //childForm.Text = "窗口 " + childFormNumber++;
             childForm.Show();
         }
+
+        private void 记录查询ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Record childForm = new Record();
+            childForm.MdiParent = this;
+            childForm.Show();
+        }
     }
 }

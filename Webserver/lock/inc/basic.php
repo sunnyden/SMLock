@@ -91,6 +91,18 @@
 		$sql=mysql_query("select * from tb_usergroup where gid=${gid}");
 		$result = mysql_fetch_array($sql);
 		return $result['groupname'];
-		
+	}
+	
+	function getUnameByID($uid){
+		$sql=mysql_query("select * from tb_users where uid=${uid}");
+		$result = mysql_fetch_array($sql);
+		if(empty($result['username']))$result['username']="(null)";
+		return $result['username'];
+	}
+	function getLknameByID($lkid){
+		$sql=mysql_query("select * from tb_lock where lknum=${lkid}");
+		$result = mysql_fetch_array($sql);
+		if(empty($result['lkname']))$result['lkname']="(null)";
+		return $result['lkname'];
 	}
 ?>

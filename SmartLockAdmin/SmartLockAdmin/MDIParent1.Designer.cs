@@ -33,6 +33,8 @@
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.loginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.记录查询ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.用户管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,8 +50,6 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.用户管理ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.记录查询ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -64,7 +64,7 @@
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.MdiWindowListItem = this.windowsMenu;
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(972, 25);
+            this.menuStrip.Size = new System.Drawing.Size(1124, 25);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "MenuStrip";
             // 
@@ -100,6 +100,22 @@
             this.lockToolStripMenuItem.Text = "锁管理(&M)";
             this.lockToolStripMenuItem.Click += new System.EventHandler(this.showLkManageMent);
             // 
+            // 记录查询ToolStripMenuItem
+            // 
+            this.记录查询ToolStripMenuItem.Name = "记录查询ToolStripMenuItem";
+            this.记录查询ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.记录查询ToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.记录查询ToolStripMenuItem.Text = "记录查询(&R)";
+            this.记录查询ToolStripMenuItem.Click += new System.EventHandler(this.记录查询ToolStripMenuItem_Click);
+            // 
+            // 用户管理ToolStripMenuItem
+            // 
+            this.用户管理ToolStripMenuItem.Name = "用户管理ToolStripMenuItem";
+            this.用户管理ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.用户管理ToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.用户管理ToolStripMenuItem.Text = "用户管理(&U)";
+            this.用户管理ToolStripMenuItem.Click += new System.EventHandler(this.用户管理ToolStripMenuItem_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -126,7 +142,7 @@
             this.statusBarToolStripMenuItem.CheckOnClick = true;
             this.statusBarToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.statusBarToolStripMenuItem.Name = "statusBarToolStripMenuItem";
-            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.statusBarToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.statusBarToolStripMenuItem.Text = "状态栏(&S)";
             this.statusBarToolStripMenuItem.Click += new System.EventHandler(this.StatusBarToolStripMenuItem_Click);
             // 
@@ -145,35 +161,35 @@
             // cascadeToolStripMenuItem
             // 
             this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
-            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.cascadeToolStripMenuItem.Text = "层叠(&C)";
             this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.CascadeToolStripMenuItem_Click);
             // 
             // tileVerticalToolStripMenuItem
             // 
             this.tileVerticalToolStripMenuItem.Name = "tileVerticalToolStripMenuItem";
-            this.tileVerticalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tileVerticalToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.tileVerticalToolStripMenuItem.Text = "垂直平铺(&V)";
             this.tileVerticalToolStripMenuItem.Click += new System.EventHandler(this.TileVerticalToolStripMenuItem_Click);
             // 
             // tileHorizontalToolStripMenuItem
             // 
             this.tileHorizontalToolStripMenuItem.Name = "tileHorizontalToolStripMenuItem";
-            this.tileHorizontalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tileHorizontalToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.tileHorizontalToolStripMenuItem.Text = "水平平铺(&H)";
             this.tileHorizontalToolStripMenuItem.Click += new System.EventHandler(this.TileHorizontalToolStripMenuItem_Click);
             // 
             // closeAllToolStripMenuItem
             // 
             this.closeAllToolStripMenuItem.Name = "closeAllToolStripMenuItem";
-            this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeAllToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.closeAllToolStripMenuItem.Text = "全部关闭(&L)";
             this.closeAllToolStripMenuItem.Click += new System.EventHandler(this.CloseAllToolStripMenuItem_Click);
             // 
             // arrangeIconsToolStripMenuItem
             // 
             this.arrangeIconsToolStripMenuItem.Name = "arrangeIconsToolStripMenuItem";
-            this.arrangeIconsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.arrangeIconsToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.arrangeIconsToolStripMenuItem.Text = "排列图标(&A)";
             this.arrangeIconsToolStripMenuItem.Click += new System.EventHandler(this.ArrangeIconsToolStripMenuItem_Click);
             // 
@@ -188,7 +204,7 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.aboutToolStripMenuItem.Text = "关于(&A) ... ...";
             // 
             // statusStrip
@@ -197,7 +213,7 @@
             this.toolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 665);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(972, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1124, 22);
             this.statusStrip.TabIndex = 2;
             this.statusStrip.Text = "StatusStrip";
             // 
@@ -207,26 +223,11 @@
             this.toolStripStatusLabel.Size = new System.Drawing.Size(32, 17);
             this.toolStripStatusLabel.Text = "状态";
             // 
-            // 用户管理ToolStripMenuItem
-            // 
-            this.用户管理ToolStripMenuItem.Name = "用户管理ToolStripMenuItem";
-            this.用户管理ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
-            this.用户管理ToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.用户管理ToolStripMenuItem.Text = "用户管理(&U)";
-            this.用户管理ToolStripMenuItem.Click += new System.EventHandler(this.用户管理ToolStripMenuItem_Click);
-            // 
-            // 记录查询ToolStripMenuItem
-            // 
-            this.记录查询ToolStripMenuItem.Name = "记录查询ToolStripMenuItem";
-            this.记录查询ToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.记录查询ToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.记录查询ToolStripMenuItem.Text = "记录查询(&R)";
-            // 
             // MDIParent1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(972, 687);
+            this.ClientSize = new System.Drawing.Size(1124, 687);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.IsMdiContainer = true;
