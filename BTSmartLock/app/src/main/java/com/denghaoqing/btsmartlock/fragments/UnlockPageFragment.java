@@ -173,7 +173,7 @@ public class UnlockPageFragment extends Fragment {
                         imgSecureAuthStat.setVisibility(View.VISIBLE);
                         txtTips.setText(R.string.finger_auth_success_tips);
                         codeEnter.setVisibility(View.VISIBLE);
-                        codeEnter.setInputType(InputType.TYPE_CLASS_TEXT);
+                        codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER);
                         mButton.setVisibility(View.VISIBLE);
                         codeEnter.setText("");
                         mButton.setText("UNLOCK");
@@ -440,7 +440,7 @@ public class UnlockPageFragment extends Fragment {
                         imgSecureAuthStat.setVisibility(View.VISIBLE);
                         txtTips.setText(R.string.pin_auth_success_tips);
                         codeEnter.setVisibility(View.VISIBLE);
-                        codeEnter.setInputType(InputType.TYPE_CLASS_TEXT);
+                        codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER);
                         mButton.setVisibility(View.VISIBLE);
                         mButton.setText("UNLOCK");
                         codeEnter.setText("");
