@@ -204,7 +204,7 @@ void getCommand(char* p) {
 
   int strlength = strlen(p);
   for (int i = 0; i < strlength; i++) {
-    if (p[i] == 'c' && p[i + 1] == 'o' && p[i + 2] == 'd' && p[i + 3] == 'e' && p[i + 4] == '<') {
+    if (p[i] == 'c' && p[i + 1] == 'o' && p[i + 2] == 'd' && p[i + 3] == 'e' && p[i + 4] == '<') {//code<xxxx>
       i = i + 5; //<
       int code = 0;
       int pos = 1;
@@ -216,17 +216,48 @@ void getCommand(char* p) {
       }
         int second,minute,hour,date,month,year,temperature; 
 
-  minute=Clock.getMinute(),DEC;
-  bool h12=false;
-  bool PM=false;
-  bool Century=false;
-  hour=Clock.getHour(h12, PM),DEC;
-  date=Clock.getDate(),DEC;
-  month=Clock.getMonth(Century),DEC;
-  year=Clock.getYear(),DEC;
-  second=Clock.getSecond(),DEC;
+	  minute=Clock.getMinute(),DEC;
+	  bool h12=false;
+	  bool PM=false;
+	  bool Century=false;
+	  hour=Clock.getHour(h12, PM),DEC;
+	  date=Clock.getDate(),DEC;
+	  month=Clock.getMonth(Century),DEC;
+	  year=Clock.getYear(),DEC;
+	  second=Clock.getSecond(),DEC;
       if(code==getPwd(getTimestamp(year+2000,month,date,hour,minute,+8),myAddr)){
-          Serial1.println("{\"result\":0}");
+          //do sth here to perform unlock procedure
+		  Serial1.println("{\"result\":0}");
+		  
+      }else{
+        Serial1.println("{\"result\":-1}");
+      }
+    }
+	else if (p[i] == 'r' && p[i + 1] == 'e' && p[i + 2] == 'l' && p[i + 3] == 'k' && p[i + 4] == '<') { //relk<xxxx>
+      i = i + 5; //<
+      int code = 0;
+      int pos = 1;
+      while (p[i] != '>') {
+        code =code*pos+  (p[i] - '0');
+     
+        pos = 10;
+        i++;
+      }
+        int second,minute,hour,date,month,year,temperature; 
+
+	  minute=Clock.getMinute(),DEC;
+	  bool h12=false;
+	  bool PM=false;
+	  bool Century=false;
+	  hour=Clock.getHour(h12, PM),DEC;
+	  date=Clock.getDate(),DEC;
+	  month=Clock.getMonth(Century),DEC;
+	  year=Clock.getYear(),DEC;
+	  second=Clock.getSecond(),DEC;
+      if(code==getPwd(getTimestamp(year+2000,month,date,hour,minute,+8),myAddr)){
+          //do sth here to perform lock procedure
+		  Serial1.println("{\"result\":0}");
+		  
       }else{
         Serial1.println("{\"result\":-1}");
       }
