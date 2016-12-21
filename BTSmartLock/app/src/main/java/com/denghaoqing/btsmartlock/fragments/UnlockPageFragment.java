@@ -2,22 +2,15 @@ package com.denghaoqing.btsmartlock.fragments;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.os.CancellationSignal;
 import android.support.v4.app.Fragment;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
@@ -29,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +30,7 @@ import android.widget.Toast;
 import com.denghaoqing.btsmartlock.CryptoObjectHelper;
 import com.denghaoqing.btsmartlock.MainActivity;
 import com.denghaoqing.btsmartlock.utilities.BTCommSrv;
+import com.denghaoqing.btsmartlock.utilities.RecentModel;
 import com.denghaoqing.btsmartlock.utilities.security;
 import com.denghaoqing.btsmartlock.FingerprintAuthCallBack;
 import com.denghaoqing.btsmartlock.R;
@@ -46,16 +39,15 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
+import java.util.TreeSet;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -81,7 +73,10 @@ public class UnlockPageFragment extends Fragment {
     private ImageView imgAuthStat;
     private TextView txtTips;
     private EditText codeEnter;
-    private Button mButton;
+    private Button mSubmitButton;
+    private Button mRecentButton;
+    private Button mLockButton;
+
     private ProgressBar procCommStat;
     private ProgressBar procAuthStat;
     /*BT Init*/
@@ -90,6 +85,7 @@ public class UnlockPageFragment extends Fragment {
     private getMac mgetMac=null;
     private GetAuthCode mGetAuthCode = null;
     private int BTRetryCount=0;
+    private int LkOperationCode=1;//1: unlock ; 0:Lock
     private String codeLock="";
     private final int TIMER_TICK=9;
     private Timer mTimerToKill=new Timer(); //This timer is used to avoid the endless waiting for the not responding device.
@@ -102,12 +98,15 @@ public class UnlockPageFragment extends Fragment {
     private boolean isAuthSuccess=false;
     private boolean isFingerPrint=true;
 
+    private Set<String> recentList=new TreeSet<>();
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     public String mac="";
+    public String name="";
     public String code="";
 
     private Handler handler = null;
@@ -174,9 +173,11 @@ public class UnlockPageFragment extends Fragment {
                         txtTips.setText(R.string.finger_auth_success_tips);
                         codeEnter.setVisibility(View.VISIBLE);
                         codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        mButton.setVisibility(View.VISIBLE);
+                        mSubmitButton.setVisibility(View.VISIBLE);
                         codeEnter.setText("");
-                        mButton.setText("UNLOCK");
+                        mSubmitButton.setText("UNLOCK");
+                        mRecentButton.setVisibility(View.VISIBLE);
+                        mLockButton.setVisibility(View.VISIBLE);
                         Toast.makeText(getContext(), "Auth Success!", Toast.LENGTH_SHORT).show();
 
                         break;
@@ -302,7 +303,7 @@ public class UnlockPageFragment extends Fragment {
                                         conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                                         conn.connect();
                                         DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-                                        String content = "action=5&token="+userinfo.getString("token","null")+"&uid="+userinfo.getInt("uid",-1)+"&stat=1&lkcode="+codeLock;
+                                        String content = "action=5&token="+userinfo.getString("token","null")+"&uid="+userinfo.getInt("uid",-1)+"&stat="+LkOperationCode+"&lkcode="+codeLock;
                                         out.writeBytes(content);
                                         out.flush();
                                         out.close();
@@ -322,19 +323,26 @@ public class UnlockPageFragment extends Fragment {
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_check_circle_black_24dp);
                             imgAuthStat.setVisibility(View.VISIBLE);
+
                             mTimerToKill.cancel();
                             mBTCommSrv.stop();
-                            mButton.setEnabled(true);
+                            mSubmitButton.setEnabled(true);
+                            mLockButton.setEnabled(true);
+                            mRecentButton.setEnabled(true);
                             codeEnter.setEnabled(true);
                             codeEnter.setText("");
                             BTRetryCount = 0;
-                            Toast.makeText(getContext(),"Unlocked!",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),"Lock: "+name+" unlocked!",Toast.LENGTH_SHORT).show();
+
+
                         }else{
                             procAuthStat.setVisibility(View.GONE);
                             imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
                             mTimerToKill.cancel();
                             imgAuthStat.setVisibility(View.VISIBLE);
-                            mButton.setEnabled(true);
+                            mSubmitButton.setEnabled(true);
+                            mLockButton.setEnabled(true);
+                            mRecentButton.setEnabled(true);
                             codeEnter.setEnabled(true);
                             Log.e("Post","Wrong json result");
                             mBTCommSrv.stop();
@@ -352,7 +360,9 @@ public class UnlockPageFragment extends Fragment {
                             imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
                             mTimerToKill.cancel();
                             imgAuthStat.setVisibility(View.VISIBLE);
-                            mButton.setEnabled(true);
+                            mSubmitButton.setEnabled(true);
+                            mLockButton.setEnabled(true);
+                            mRecentButton.setEnabled(true);
                             codeEnter.setEnabled(true);
                             BTRetryCount = 0;
                         }
@@ -377,7 +387,9 @@ public class UnlockPageFragment extends Fragment {
                     procAuthStat.setVisibility(View.GONE);
                     imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
                     imgAuthStat.setVisibility(View.VISIBLE);
-                    mButton.setEnabled(true);
+                    mSubmitButton.setEnabled(true);
+                    mLockButton.setEnabled(true);
+                    mRecentButton.setEnabled(true);
                     codeEnter.setEnabled(true);
                     mTimerToKill.cancel();
                     mBTCommSrv.stop();
@@ -414,7 +426,7 @@ public class UnlockPageFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_unlock_page, container, false);
@@ -426,9 +438,54 @@ public class UnlockPageFragment extends Fragment {
         procAuthStat=(ProgressBar)view.findViewById(R.id.onBtCommProc);
         txtTips = (TextView)view.findViewById(R.id.txtTips);
         codeEnter=(EditText)view.findViewById(R.id.et_code);
-        mButton=(Button)view.findViewById(R.id.submit);
 
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mLockButton=(Button)view.findViewById(R.id.lockBtn);
+        mLockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mBluetoothAdapter.isEnabled()){
+                    //bluetooth communication
+                    LkOperationCode=0;
+                    mSubmitButton.setEnabled(false);
+                    mLockButton.setEnabled(false);
+                    mRecentButton.setEnabled(false);
+                    codeEnter.setEnabled(false);
+                    //Get MAC Address from remote server
+                    SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
+                    codeLock=codeEnter.getText().toString();
+                    mgetMac = new getMac(codeLock,userinfo.getString("token","null"),userinfo.getInt("uid",-1));
+                    mgetMac.execute((Void)null);
+                }else{
+                    Toast.makeText(getContext(), "Enabling Bluetooth", Toast.LENGTH_SHORT).show();
+                    try{
+                        mBluetoothAdapter.enable();
+                    }catch(Exception e){
+                        Log.e("Error",e.toString());
+                    }
+                }
+
+            }
+        });
+        mRecentButton=(Button)view.findViewById(R.id.recentButton);
+        mRecentButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+                mBuilder.setTitle("Select a lock");
+                SharedPreferences recentPref= getContext().getSharedPreferences("recent",Context.MODE_PRIVATE);
+                final RecentModel mRecentModel = new RecentModel(recentPref.getString("recent",""));
+                mBuilder.setItems(mRecentModel.getRecentName(),new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which){
+                        codeEnter.setText(mRecentModel.findCodeByID(which));
+                    }
+                });
+                mBuilder.show();
+            }
+        });
+
+        mSubmitButton =(Button)view.findViewById(R.id.submit);
+        mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!isFingerPrint &&  !isAuthSuccess){
@@ -441,8 +498,10 @@ public class UnlockPageFragment extends Fragment {
                         txtTips.setText(R.string.pin_auth_success_tips);
                         codeEnter.setVisibility(View.VISIBLE);
                         codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        mButton.setVisibility(View.VISIBLE);
-                        mButton.setText("UNLOCK");
+                        mSubmitButton.setVisibility(View.VISIBLE);
+                        mSubmitButton.setText("UNLOCK");
+                        mRecentButton.setVisibility(View.VISIBLE);
+                        mLockButton.setVisibility(View.VISIBLE);
                         codeEnter.setText("");
                         Toast.makeText(getContext(), "Auth Success!", Toast.LENGTH_SHORT).show();
                     }else{
@@ -452,8 +511,10 @@ public class UnlockPageFragment extends Fragment {
                 else{
                     if(mBluetoothAdapter.isEnabled()){
                         //bluetooth communication
-
-                        mButton.setEnabled(false);
+                        LkOperationCode=1;
+                        mSubmitButton.setEnabled(false);
+                        mLockButton.setEnabled(false);
+                        mRecentButton.setEnabled(false);
                         codeEnter.setEnabled(false);
                         //Get MAC Address from remote server
                         SharedPreferences userinfo = getContext().getSharedPreferences("userinfo", Context.MODE_PRIVATE);
@@ -477,14 +538,14 @@ public class UnlockPageFragment extends Fragment {
         if(isFingerPrint){
             codeEnter.setVisibility(View.INVISIBLE);
             codeEnter.setText("");
-            mButton.setVisibility(View.INVISIBLE);
-            mButton.setText("UNLOCK");
+            mSubmitButton.setVisibility(View.INVISIBLE);
+            mSubmitButton.setText("UNLOCK");
         }else{
             codeEnter.setVisibility(View.VISIBLE);
             codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-            mButton.setVisibility(View.VISIBLE);
+            mSubmitButton.setVisibility(View.VISIBLE);
             codeEnter.setText("");
-            mButton.setText("Authorize");
+            mSubmitButton.setText("Authorize");
         }
 
         imgFinger.setOnClickListener(new View.OnClickListener() {
@@ -498,8 +559,8 @@ public class UnlockPageFragment extends Fragment {
                         codeEnter.setVisibility(View.VISIBLE);
                         codeEnter.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                         codeEnter.setText("");
-                        mButton.setVisibility(View.VISIBLE);
-                        mButton.setText("Authorize");
+                        mSubmitButton.setVisibility(View.VISIBLE);
+                        mSubmitButton.setText("Authorize");
 
                     }else{
                         imgFinger.setImageResource(R.drawable.ic_fingerprint_black_24dp);
@@ -507,8 +568,8 @@ public class UnlockPageFragment extends Fragment {
                         codeEnter.setVisibility(View.INVISIBLE);
                         codeEnter.setText("");
                         isFingerPrint = true;
-                        mButton.setVisibility(View.INVISIBLE);
-                        mButton.setText("UNLOCK");
+                        mSubmitButton.setVisibility(View.INVISIBLE);
+                        mSubmitButton.setText("UNLOCK");
                     }
                 }
 
@@ -591,9 +652,19 @@ public class UnlockPageFragment extends Fragment {
 
                 if(result.getInt("error")==0) {
                     mac=result.getString("mac");
+                    name=result.getString("name");
+                    SharedPreferences recentPref= getContext().getSharedPreferences("recent",Context.MODE_PRIVATE);
+                    RecentModel mRecentModel = new RecentModel(recentPref.getString("recent",""));
+                    mRecentModel.insert(name,codeLock);
+                    SharedPreferences.Editor editor=recentPref.edit();
+                    editor.putString("recent",mRecentModel.getRaw());
+                    editor.apply();
                     isValid=true;
+                }else{
+                    Toast.makeText(getContext(),"Error:"+String.valueOf(result.getInt("error"))+"\n"+result.getString("info"),Toast.LENGTH_SHORT).show();
                 }
             }catch (Exception e){
+                e.printStackTrace();
                 isValid = false;
             }
 
@@ -616,7 +687,9 @@ public class UnlockPageFragment extends Fragment {
                 procCommStat.setVisibility(View.GONE);
                 imgCommStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
                 imgCommStat.setVisibility(View.VISIBLE);
-                mButton.setEnabled(true);
+                mSubmitButton.setEnabled(true);
+                mLockButton.setEnabled(true);
+                mRecentButton.setEnabled(true);
                 codeEnter.setEnabled(true);
             }
         }
@@ -693,7 +766,13 @@ public class UnlockPageFragment extends Fragment {
             if (success)
             {
                 SimpleDateFormat df = new SimpleDateFormat("yy,MM,dd,HH,mm,ss");
-                String message="code<"+code+">time<"+df.format(new Date())+">";
+                String message;
+                if(LkOperationCode==1){
+                    message="code<"+code+">time<"+df.format(new Date())+">";
+                }else{
+                    message="unlk<"+code+">time<"+df.format(new Date())+">";
+                }
+
                 Log.d("command",message);
                 byte[] byteToSend = message.getBytes();//transform it into byte[]
                 mBTCommSrv.write(byteToSend);
@@ -701,7 +780,9 @@ public class UnlockPageFragment extends Fragment {
                 procAuthStat.setVisibility(View.GONE);
                 imgAuthStat.setImageResource(R.drawable.ic_info_outline_black_24dp);
                 imgAuthStat.setVisibility(View.VISIBLE);
-                mButton.setEnabled(true);
+                mSubmitButton.setEnabled(true);
+                mLockButton.setEnabled(true);
+                mRecentButton.setEnabled(true);
                 codeEnter.setEnabled(true);
             }
         }

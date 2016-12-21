@@ -27,10 +27,26 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center">
-        <EditText
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/et_code" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_code" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recent"
+                android:id="@+id/recentButton"
+                android:visibility="gone" />
+        </LinearLayout>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -107,6 +123,14 @@
                 android:text="Connecting &amp; Authorizing"
                 android:id="@+id/textView5" />
         </LinearLayout>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Lock"
+            android:id="@+id/lockBtn"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
 
         <Button
             android:layout_width="match_parent"
