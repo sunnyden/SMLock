@@ -770,7 +770,7 @@ public class UnlockPageFragment extends Fragment {
                 if(LkOperationCode==1){
                     message="code<"+code+">time<"+df.format(new Date())+">";
                 }else{
-                    message="unlk<"+code+">time<"+df.format(new Date())+">";
+                    message="relk<"+code+">time<"+df.format(new Date())+">";
                 }
 
                 Log.d("command",message);
