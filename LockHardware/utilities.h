@@ -16,7 +16,8 @@ int *getMac(char* origAddr) {
     The function will get the mac address in this format :"+ADDR:1234:56:abcdef"
   */
 
-  unsigned int i = 0, t = -1, sub_position = 0, tmp_value = 0xFF, position = 0, length = strlen(origAddr); //initialize all variables
+  unsigned int i = 0, sub_position = 0, tmp_value = 0xFF, position = 0, length = strlen(origAddr); //initialize all variables
+  int t = -1;
   int addr_empty[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 #ifndef __cplusplus
   _Bool isFetched = 0;//initialize boolean
